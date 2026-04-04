@@ -1,4 +1,14 @@
 ---
-layout: home
+layout: default
 title: My Blog
 ---
+
+<h2>My Posts</h2>
+
+<ul>
+  {% for post in site.posts %}
+    <li>
+      <a href="{{ post.url }}">{{ post.title }}</a>
+    </li>
+  {% endfor %}
+</ul>
