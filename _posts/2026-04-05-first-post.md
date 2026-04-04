@@ -1,8 +1,6 @@
 ---
 title: "My First Automated Blog"
-date: 2026-04-05
+date: 2026-04-05 00:00:00 +0530
 ---
 
-Today I created my automated blog system.
-
-Now I don’t need to code every time.
+This is my first automated blog.
