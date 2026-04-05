@@ -559,3 +559,17 @@ img { max-width: 100%; display: block; }
   .post-cover { height: 240px; }
   .hero-name { font-size: 22px; }
 }
+.post-content .img-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.post-content .img-grid img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin: 0;
+}
