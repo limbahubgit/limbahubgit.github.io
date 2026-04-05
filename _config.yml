@@ -1,3 +1,4 @@
 theme: jekyll-theme-midnight
 baseurl: ""
 url: "https://limbahubgit.github.io"
+future: true
