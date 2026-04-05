@@ -1,0 +1,88 @@
+---
+layout: default
+---
+
+<div class="container post-container">
+  <div class="post-main">
+    <article class="post">
+      <div class="post-header">
+        <div class="post-meta-top">
+          <span class="read-time">{{ content | number_of_words | divided_by: 200 | plus: 1 }} min read</span>
+          <span class="dot">●</span>
+          <span class="post-date">{{ page.date | date: "%b %-d, %Y" }}</span>
+        </div>
+
+        <h1 class="post-title">{{ page.title }}</h1>
+
+        {% if page.description %}
+        <p class="post-description">{{ page.description }}</p>
+        {% endif %}
+
+        <div class="post-author-bar">
+          <div class="author-avatar">{{ site.author | slice: 0 }}</div>
+          <span class="author-name">{{ site.author }}</span>
+          {% if page.tags %}
+          <div class="post-tags">
+            {% for tag in page.tags %}
+            <span class="tag">{{ tag }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if page.image %}
+      <div class="post-cover">
+        <img src="{{ page.image }}" alt="{{ page.title }}" />
+      </div>
+      {% endif %}
+
+      <div class="post-content">
+        {{ content }}
+      </div>
+
+      <div class="post-nav">
+        {% if page.previous.url %}
+        <a href="{{ page.previous.url }}" class="prev-post">
+          <span class="nav-label">← Previous</span>
+          <span class="nav-title">{{ page.previous.title }}</span>
+        </a>
+        {% endif %}
+        {% if page.next.url %}
+        <a href="{{ page.next.url }}" class="next-post">
+          <span class="nav-label">Next →</span>
+          <span class="nav-title">{{ page.next.title }}</span>
+        </a>
+        {% endif %}
+      </div>
+    </article>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">Latest posts</p>
+      {% for post in site.posts limit:4 %}
+      <a href="{{ post.url }}" class="recent-post">
+        <div class="rp-img">
+          {% if post.image %}<img src="{{ post.image }}" alt="{{ post.title }}" />{% endif %}
+        </div>
+        <div>
+          <p class="rp-title">{{ post.title }}</p>
+          <p class="rp-date">{{ post.date | date: "%b %-d, %Y" }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    {% if site.tags.size > 0 %}
+    <div class="sidebar-section">
+      <p class="sidebar-label">Explore tags</p>
+      <div class="tags-cloud">
+        {% for tag in site.tags %}
+        <span class="tag">{{ tag[0] }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </aside>
+</div>
