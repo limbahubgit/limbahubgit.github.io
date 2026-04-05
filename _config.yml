@@ -1,6 +1,10 @@
-theme: jekyll-theme-midnight
-baseurl: ""
+title: "My Blog"
+description: "Thoughts, stories and ideas."
+author: "Your Name"
 url: "https://limbahubgit.github.io"
+baseurl: ""
 future: true
-title: "Your Blog Name"
-description: "Personal blog about life & everything"
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
