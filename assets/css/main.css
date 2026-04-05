@@ -559,27 +559,32 @@ img { max-width: 100%; display: block; }
   .post-cover { height: 240px; }
   .hero-name { font-size: 22px; }
 }
-.post-content > img {
-  width: 45%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 6px;
-  margin: 8px;
-  display: inline-block;
+.post-content img {
+  width: 100% !important;
+  height: 180px !important;
+  object-fit: cover !important;
+  border-radius: 6px !important;
+  margin: 0 !important;
+  display: block !important;
 }
 
 .post-content .img-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 24px 0;
-}
-
-.post-content .img-grid img {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin: 24px 0 !important;
+}.post-content img {
   width: 100% !important;
   height: 180px !important;
-  object-fit: cover;
-  border-radius: 6px;
+  object-fit: cover !important;
+  border-radius: 6px !important;
   margin: 0 !important;
   display: block !important;
+}
+
+.post-content .img-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin: 24px 0 !important;
 }
