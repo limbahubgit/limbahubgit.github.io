@@ -2,3 +2,5 @@ theme: jekyll-theme-midnight
 baseurl: ""
 url: "https://limbahubgit.github.io"
 future: true
+title: "Your Blog Name"
+description: "Personal blog about life & everything"
