@@ -3,12 +3,12 @@ layout: default
 title: My Blog
 ---
 
-<h2>My Posts</h2>
+# Hi, I'm [deepak limba] 👋
+Welcome to my blog where I write about life, experiences and everything in between.
 
-<ul>
-  {% for post in site.posts %}
-    <li>
-      <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
-    </li>
-  {% endfor %}
-</ul>
+---
+
+## My Posts
+{% for post in site.posts %}
+- [{{ post.title }}]({{ post.url }})
+{% endfor %}
