@@ -573,18 +573,13 @@ img { max-width: 100%; display: block; }
   grid-template-columns: 1fr 1fr !important;
   gap: 10px !important;
   margin: 24px 0 !important;
-}.post-content img {
+}
+
+.post-content .img-grid img {
   width: 100% !important;
   height: 180px !important;
   object-fit: cover !important;
   border-radius: 6px !important;
   margin: 0 !important;
   display: block !important;
-}
-
-.post-content .img-grid {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 10px !important;
-  margin: 24px 0 !important;
 }
