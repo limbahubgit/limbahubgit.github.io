@@ -1,11 +1,19 @@
 ---
 ---
 
-@import "{{ site.theme }}";
+body {
+  font-family: Georgia, serif;
+  background-color: #f9f9f9;
+  color: #222;
+}
 
-.post-content {
-  max-width: 750px;
-  margin: 0 auto;
+.page-content, main, article, .post {
+  max-width: 750px !important;
+  margin: 0 auto !important;
+  padding: 20px !important;
   line-height: 1.8;
-  padding: 0 20px;
+}
+
+p {
+  margin-bottom: 1.5rem;
 }
