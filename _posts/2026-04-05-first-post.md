@@ -1,4 +1,5 @@
 ---
+layout: post
 title: "My First Automated Blog(headache)"
 date: 2026-04-05 00:00:00 +0530
 image: /assets/images/t3jo2b6g_irrfan-khan-twitter_625x300_30_July_20.jpg
