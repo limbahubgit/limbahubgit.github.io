@@ -1,6 +1,5 @@
 ---
 ---
-
 body {
   font-family: Georgia, serif;
   background-color: #f9f9f9;
@@ -16,4 +15,22 @@ body {
 
 p {
   margin-bottom: 1.5rem;
+}
+
+/* Fix images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+/* Fix content not getting cut off */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
 }
