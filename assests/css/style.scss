@@ -4,6 +4,12 @@ body {
   font-family: Georgia, serif;
   background-color: #f9f9f9;
   color: #222;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .page-content, main, article, .post {
@@ -11,13 +17,13 @@ body {
   margin: 0 auto !important;
   padding: 20px !important;
   line-height: 1.8;
+  overflow: hidden;
 }
 
 p {
   margin-bottom: 1.5rem;
 }
 
-/* Fix images */
 img {
   max-width: 100%;
   height: auto;
@@ -26,11 +32,8 @@ img {
   border-radius: 8px;
 }
 
-/* Fix content not getting cut off */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  overflow-x: hidden;
+/* Fix sliding gallery overflow */
+div[style*="overflow:hidden"] {
+  max-width: 100% !important;
+  overflow: hidden !important;
 }
