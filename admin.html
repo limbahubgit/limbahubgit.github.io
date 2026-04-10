@@ -1,0 +1,316 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600&family=DM+Sans:wght@300;400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e0e;
+      --card: #161616;
+      --border: #252525;
+      --accent: #c084fc;
+      --accent-dim: #1e1028;
+      --text: #f0ede6;
+      --muted: #666;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+    /* ── Login ── */
+    #login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .login-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 44px 40px; max-width: 380px; width: 100%;
+      text-align: center;
+    }
+    .login-card h1 { font-family: 'Lora', serif; font-size: 22px; margin-bottom: 8px; }
+    .login-card p  { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+
+    /* ── Dashboard ── */
+    #dashboard { display: none; max-width: 820px; margin: 0 auto; padding: 24px 20px 60px; }
+
+    header { padding: 24px 0 20px; border-bottom: 1px solid var(--border); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-family: 'Lora', serif; font-size: 24px; }
+    header span { color: var(--muted); font-size: 13px; }
+
+    .stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stat {
+      flex: 1; min-width: 140px; background: var(--card);
+      border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px;
+    }
+    .stat-num { font-size: 34px; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .ai-box {
+      background: #0d0d1a; border: 1px solid #2a2a4a;
+      border-radius: 14px; padding: 20px; margin-bottom: 24px;
+    }
+    .ai-box p { font-size: 13px; color: var(--accent); margin-bottom: 12px; }
+    .ai-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+    .ai-btn {
+      background: var(--accent-dim); border: 1px solid #4a2a7a;
+      border-radius: 8px; padding: 8px 18px; color: var(--accent);
+      cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif;
+      transition: opacity 0.15s;
+    }
+    .ai-btn:hover { opacity: 0.8; }
+    .ai-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .ai-output {
+      background: #0a0a0a; border: 1px solid #1e1e2e;
+      border-radius: 14px; padding: 20px; margin-bottom: 24px;
+      min-height: 80px; display: none;
+    }
+    .ai-output pre { white-space: pre-wrap; font-family: inherit; font-size: 14px; color: #ccc; line-height: 1.75; }
+
+    .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 14px; }
+
+    .visitor-list { display: flex; flex-direction: column; gap: 10px; }
+    .v-row {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px; display: flex; gap: 14px; align-items: flex-start;
+    }
+    .avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--accent-dim); border: 1px solid #4a2a7a;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); font-weight: 700; font-size: 15px; flex-shrink: 0;
+    }
+    .v-name { font-weight: 500; font-size: 15px; }
+    .ig-tag {
+      background: var(--accent-dim); color: var(--accent);
+      border-radius: 4px; padding: 1px 8px; font-size: 11px; margin-left: 8px;
+    }
+    .v-meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .v-note { font-size: 13px; color: #888; font-style: italic; margin-top: 6px; }
+
+    .empty { text-align: center; color: var(--muted); padding: 48px; }
+
+    .spinner {
+      width: 28px; height: 28px; border: 3px solid #222;
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 20px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Shared inputs ── */
+    input {
+      width: 100%; background: #1c1c1c; border: 1px solid var(--border);
+      border-radius: 10px; padding: 11px 14px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
+      transition: border-color 0.2s; margin-bottom: 12px;
+    }
+    input:focus { border-color: var(--accent); }
+    .btn {
+      width: 100%; background: var(--accent); border: none; border-radius: 10px;
+      padding: 12px; color: #0e0e0e; font-size: 15px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer;
+    }
+    .err { color: #f87171; font-size: 13px; margin-bottom: 10px; }
+
+    /* Source badge */
+    .badge {
+      display: inline-block; padding: 2px 10px; border-radius: 12px;
+      font-size: 11px; font-weight: 500; margin-left: 6px;
+    }
+    .badge-ig  { background: #2d1a3a; color: #c084fc; }
+    .badge-google { background: #1a2a1a; color: #86efac; }
+    .badge-friend { background: #1a2225; color: #67e8f9; }
+    .badge-other  { background: #252018; color: #fde68a; }
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div style="font-size:40px;margin-bottom:14px">🔐</div>
+    <h1>Admin Access</h1>
+    <p>Enter your admin password to view your blog dashboard</p>
+    <input type="password" id="pwd" placeholder="Password" onkeydown="if(event.key==='Enter')login()" />
+    <p class="err" id="login-err" style="display:none">Wrong password. Try again.</p>
+    <button class="btn" onclick="login()">Enter Dashboard</button>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div id="dashboard">
+  <header>
+    <div>
+      <h1>📊 Blog Backend</h1>
+      <span id="last-updated"></span>
+    </div>
+    <button onclick="logout()" style="background:transparent;border:1px solid #333;color:#777;padding:7px 16px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:13px">Logout</button>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="s-total">—</div><div class="stat-label">Total Visitors</div></div>
+    <div class="stat"><div class="stat-num" id="s-ig">—</div><div class="stat-label">From Instagram</div></div>
+    <div class="stat"><div class="stat-num" id="s-msg">—</div><div class="stat-label">Left Messages</div></div>
+    <div class="stat"><div class="stat-num" id="s-today">—</div><div class="stat-label">Today</div></div>
+  </div>
+
+  <!-- AI Panel -->
+  <div class="ai-box">
+    <p>🤖 Ask AI about your visitors:</p>
+    <div class="ai-btns">
+      <button class="ai-btn" onclick="runAI('summary')">📋 Full Summary</button>
+      <button class="ai-btn" onclick="runAI('ig')">📸 Instagram Visitors</button>
+      <button class="ai-btn" onclick="runAI('spam')">🚨 Detect Spam</button>
+      <button class="ai-btn" onclick="runAI('tips')">💡 Growth Tips</button>
+    </div>
+  </div>
+
+  <div class="ai-output" id="ai-output">
+    <div class="spinner" id="ai-spinner" style="display:none"></div>
+    <pre id="ai-text"></pre>
+  </div>
+
+  <!-- Visitor List -->
+  <p class="section-title">Recent Visitors</p>
+  <div class="visitor-list" id="visitor-list">
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<script>
+  // ─── CONFIGURATION ────────────────────────────────────────────
+  const SUPABASE_URL     = 'https://vtfmaldbgrtxywmbulqy.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0Zm1hbGRiZ3J0eHl3bWJ1bHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzU0NzgsImV4cCI6MjA5MTQxMTQ3OH0.jxiItetrB0X6UwiKtw11sijnvITAGxt3vUpf0vqgOrY';
+  const ADMIN_PASSWORD   = 'YOUR_ADMIN_PASSWORD'; // e.g. 'myblog2024'
+  // ─────────────────────────────────────────────────────────────
+
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let visitors = [];
+
+  // ── Auth ──────────────────────────────────────────────────────
+  function login() {
+    const pwd = document.getElementById('pwd').value;
+    if (pwd === ADMIN_PASSWORD) {
+      sessionStorage.setItem('admin_auth', 'true');
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      loadVisitors();
+    } else {
+      document.getElementById('login-err').style.display = 'block';
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem('admin_auth');
+    location.reload();
+  }
+
+  if (sessionStorage.getItem('admin_auth') === 'true') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadVisitors();
+  }
+
+  // ── Load Data ─────────────────────────────────────────────────
+  async function loadVisitors() {
+    const { data, error } = await db
+      .from('visitors')
+      .select('*')
+      .order('visited_at', { ascending: false });
+
+    if (error) { console.error(error); return; }
+    visitors = data || [];
+    renderStats();
+    renderList();
+    document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  }
+
+  function renderStats() {
+    const today = new Date().toDateString();
+    document.getElementById('s-total').textContent = visitors.length;
+    document.getElementById('s-ig').textContent    = visitors.filter(v => v.source === 'Instagram').length;
+    document.getElementById('s-msg').textContent   = visitors.filter(v => v.note).length;
+    document.getElementById('s-today').textContent = visitors.filter(v =>
+      new Date(v.visited_at).toDateString() === today
+    ).length;
+  }
+
+  function badgeFor(source) {
+    const map = { Instagram: 'ig', Google: 'google', 'Friend shared it': 'friend', Other: 'other' };
+    return `<span class="badge badge-${map[source] || 'other'}">${source}</span>`;
+  }
+
+  function renderList() {
+    const el = document.getElementById('visitor-list');
+    if (!visitors.length) {
+      el.innerHTML = '<p class="empty">No visitors yet. Share your blog link!</p>';
+      return;
+    }
+    el.innerHTML = visitors.map(v => `
+      <div class="v-row">
+        <div class="avatar">${(v.name || '?')[0].toUpperCase()}</div>
+        <div style="flex:1">
+          <div class="v-name">
+            ${v.name}
+            ${v.ig_handle ? `<span class="ig-tag">${v.ig_handle}</span>` : ''}
+            ${badgeFor(v.source)}
+          </div>
+          <div class="v-meta">🕐 ${new Date(v.visited_at).toLocaleString()}</div>
+          ${v.note ? `<div class="v-note">"${v.note}"</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ── AI ────────────────────────────────────────────────────────
+  async function runAI(type) {
+    if (!visitors.length) { alert('No visitor data yet!'); return; }
+
+    const out = document.getElementById('ai-output');
+    const spinner = document.getElementById('ai-spinner');
+    const text = document.getElementById('ai-text');
+
+    out.style.display = 'block';
+    spinner.style.display = 'block';
+    text.textContent = '';
+    document.querySelectorAll('.ai-btn').forEach(b => b.disabled = true);
+
+    const prompts = {
+      summary: `Here is my personal blog's visitor data in JSON: ${JSON.stringify(visitors)}. Give me a friendly summary: total visitors, top traffic source, time patterns, and 2-3 tips to grow my audience. Keep it concise and actionable.`,
+      ig:      `Here are my blog visitors: ${JSON.stringify(visitors)}. List all visitors who came from Instagram with their names and IG handles. Then suggest 3 ways I can personally engage with them on Instagram.`,
+      spam:    `Review these blog visitors: ${JSON.stringify(visitors)}. Flag any entries that look like spam or bots. Explain why for each flagged entry. If none look suspicious, say so.`,
+      tips:    `Based on this visitor data: ${JSON.stringify(visitors)}. Give me 5 specific, creative growth tips for my blog tailored to where my audience is coming from. Be practical and direct.`
+    };
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompts[type] }]
+        })
+      });
+      const data = await res.json();
+      text.textContent = data.content?.map(b => b.text || '').join('') || 'No response.';
+    } catch (e) {
+      text.textContent = 'Error reaching AI. Check your connection.';
+    }
+
+    spinner.style.display = 'none';
+    document.querySelectorAll('.ai-btn').forEach(b => b.disabled = false);
+  }
+</script>
+</body>
+</html>
