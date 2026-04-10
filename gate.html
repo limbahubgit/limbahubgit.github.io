@@ -1,0 +1,263 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome — Before You Enter</title>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e0e;
+      --card: #161616;
+      --border: #252525;
+      --accent: #c084fc;
+      --accent-dim: #1e1028;
+      --text: #f0ede6;
+      --muted: #777;
+      --error: #f87171;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 44px 40px;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: 0 0 60px rgba(192, 132, 252, 0.06);
+      animation: rise 0.5s ease both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .wave { font-size: 42px; margin-bottom: 14px; display: block; }
+
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: 26px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .field { margin-bottom: 20px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: #1c1c1c;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: none; height: 76px; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .chip {
+      background: #1c1c1c;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 7px 16px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .chip.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .error { color: var(--error); font-size: 13px; margin-bottom: 10px; }
+
+    .btn {
+      width: 100%;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      color: #0e0e0e;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover { opacity: 0.88; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .success {
+      text-align: center;
+      padding: 20px 0;
+      animation: rise 0.4s ease both;
+    }
+
+    .success h2 { font-family: 'Lora', serif; font-size: 22px; margin-bottom: 10px; }
+    .success p  { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+<div class="card" id="form-view">
+  <span class="wave">👋</span>
+  <h1>Hey, welcome!</h1>
+  <p class="sub">Before you dive in, tell me a little about yourself. Takes 10 seconds!</p>
+
+  <div class="field">
+    <label>Your Name *</label>
+    <input type="text" id="name" placeholder="e.g. Riya" />
+  </div>
+
+  <div class="field">
+    <label>Instagram Handle (optional)</label>
+    <input type="text" id="ig" placeholder="@yourhandle" />
+  </div>
+
+  <div class="field">
+    <label>How did you find this blog? *</label>
+    <div class="chips" id="source-chips">
+      <button class="chip" onclick="selectSource(this, 'Instagram')">Instagram</button>
+      <button class="chip" onclick="selectSource(this, 'Google')">Google</button>
+      <button class="chip" onclick="selectSource(this, 'Friend shared it')">Friend shared it</button>
+      <button class="chip" onclick="selectSource(this, 'Other')">Other</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Any message for me? (optional)</label>
+    <textarea id="note" placeholder="Love your content! / Just exploring..."></textarea>
+  </div>
+
+  <p class="error" id="err" style="display:none"></p>
+
+  <button class="btn" id="submit-btn" onclick="handleSubmit()">Enter the blog →</button>
+</div>
+
+<script>
+  // ─── CONFIGURATION ───────────────────────────────────────
+  // Replace these with your actual Supabase project details
+  const SUPABASE_URL = 'https://vtfmaldbgrtxywmbulqy.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0Zm1hbGRiZ3J0eHl3bWJ1bHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzU0NzgsImV4cCI6MjA5MTQxMTQ3OH0.jxiItetrB0X6UwiKtw11sijnvITAGxt3vUpf0vqgOrY';
+  // The URL of your actual blog index page
+  const BLOG_URL = '/';
+  // ─────────────────────────────────────────────────────────
+
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let selectedSource = '';
+
+  function selectSource(el, value) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    selectedSource = value;
+  }
+
+  function showErr(msg) {
+    const e = document.getElementById('err');
+    e.textContent = msg;
+    e.style.display = 'block';
+  }
+
+  async function handleSubmit() {
+    const name   = document.getElementById('name').value.trim();
+    const ig     = document.getElementById('ig').value.trim();
+    const note   = document.getElementById('note').value.trim();
+    const btn    = document.getElementById('submit-btn');
+
+    document.getElementById('err').style.display = 'none';
+
+    if (!name)           { showErr('Please enter your name!'); return; }
+    if (!selectedSource) { showErr('Please tell us how you found the blog!'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const { error } = await db.from('visitors').insert([{
+      name,
+      ig_handle: ig,
+      source: selectedSource,
+      note,
+      visited_at: new Date().toISOString()
+    }]);
+
+    if (error) {
+      console.error(error);
+      showErr('Something went wrong. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Enter the blog →';
+      return;
+    }
+
+    // Mark as passed in session so they don't see the gate again this session
+    sessionStorage.setItem('blog_access', 'true');
+
+    // Show success then redirect
+    document.getElementById('form-view').innerHTML = `
+      <div class="success">
+        <span style="font-size:48px">🎉</span>
+        <h2>You're in!</h2>
+        <p>Thanks for introducing yourself. Taking you to the blog…</p>
+      </div>
+    `;
+
+    setTimeout(() => { window.location.href = BLOG_URL; }, 1800);
+  }
+
+  // Skip gate if already passed this session
+  if (sessionStorage.getItem('blog_access') === 'true') {
+    window.location.href = BLOG_URL;
+  }
+</script>
+</body>
+</html>
