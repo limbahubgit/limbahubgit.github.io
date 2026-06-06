@@ -8,213 +8,6 @@
   <link rel="stylesheet" href="/assets/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
-<style>
-  /* ── Floating Widget ── */
-  #limb-widget-btn {
-    position: fixed;
-    bottom: 28px;
-    right: 28px;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: #1a1a1a;
-    border: 1.5px solid #333;
-    color: #f0ede6;
-    font-size: 22px;
-    cursor: pointer;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-    transition: transform 0.2s, border-color 0.2s;
-    animation: widget-pop 0.5s cubic-bezier(.34,1.56,.64,1) both;
-    animation-delay: 1.5s;
-    opacity: 0;
-  }
-
-  #limb-widget-btn.ready { opacity: 1; }
-  #limb-widget-btn:hover { transform: scale(1.1); border-color: #c084fc; }
-
-  @keyframes widget-pop {
-    from { opacity: 0; transform: scale(0.5) translateY(20px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  #limb-widget-panel {
-    position: fixed;
-    bottom: 92px;
-    right: 28px;
-    width: 300px;
-    background: #141414;
-    border: 1px solid #2a2a2a;
-    border-radius: 18px;
-    padding: 24px;
-    z-index: 9998;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-    display: none;
-    animation: panel-rise 0.3s cubic-bezier(.34,1.56,.64,1) both;
-    font-family: 'DM Sans', 'Segoe UI', sans-serif;
-  }
-
-  #limb-widget-panel.open { display: block; }
-
-  @keyframes panel-rise {
-    from { opacity: 0; transform: translateY(16px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .lw-close {
-    position: absolute; top: 14px; right: 16px;
-    background: none; border: none; color: #555;
-    font-size: 18px; cursor: pointer; line-height: 1;
-  }
-  .lw-close:hover { color: #f0ede6; }
-
-  .lw-title {
-    font-size: 15px; font-weight: 600; color: #f0ede6;
-    margin-bottom: 4px;
-  }
-
-  .lw-sub {
-    font-size: 12px; color: #666; margin-bottom: 18px; line-height: 1.5;
-  }
-
-  .lw-input {
-    width: 100%; background: #1e1e1e; border: 1px solid #2e2e2e;
-    border-radius: 10px; padding: 10px 14px; color: #f0ede6;
-    font-family: inherit; font-size: 13px; outline: none;
-    transition: border-color 0.2s; margin-bottom: 10px; box-sizing: border-box;
-  }
-  .lw-input:focus { border-color: #c084fc; }
-
-  .lw-btn {
-    width: 100%; background: #c084fc; border: none; border-radius: 10px;
-    padding: 10px; color: #0e0e0e; font-size: 13px; font-weight: 600;
-    font-family: inherit; cursor: pointer; transition: opacity 0.2s;
-  }
-  .lw-btn:hover { opacity: 0.85; }
-  .lw-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .lw-skip {
-    display: block; text-align: center; margin-top: 10px;
-    font-size: 12px; color: #555; cursor: pointer;
-    background: none; border: none; width: 100%; font-family: inherit;
-  }
-  .lw-skip:hover { color: #888; }
-
-  .lw-success { text-align: center; padding: 8px 0; }
-  .lw-success .lw-emoji { font-size: 36px; margin-bottom: 10px; }
-  .lw-success p { font-size: 13px; color: #888; line-height: 1.6; }
-
-  @media (max-width: 480px) {
-    #limb-widget-panel { right: 16px; left: 16px; width: auto; bottom: 80px; }
-    #limb-widget-btn { bottom: 20px; right: 20px; }
-  }
-</style>
-
-<!-- Supabase CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- Widget HTML -->
-<button id="limb-widget-btn" aria-label="Say hi" title="Say hi 👋">👋</button>
-
-<div id="limb-widget-panel">
-  <button class="lw-close" onclick="closeWidget()">×</button>
-
-  <div id="lw-form-view">
-    <p class="lw-title">Hey, you! 👋</p>
-    <p class="lw-sub">How did you find this blog? Drop your IG handle if you want to connect!</p>
-
-    <input class="lw-input" id="lw-name" placeholder="Your name" type="text"/>
-    <input class="lw-input" id="lw-ig" placeholder="@yourhandle (optional)" type="text"/>
-
-    <select class="lw-input" id="lw-source" style="appearance:none;cursor:pointer">
-      <option value="" disabled selected>How did you find this? 🤔</option>
-      <option value="Instagram">Instagram</option>
-      <option value="Google">Google</option>
-      <option value="Friend shared it">Friend shared it</option>
-      <option value="Other">Other</option>
-    </select>
-
-    <button class="lw-btn" id="lw-submit" onclick="submitWidget()">Send 🚀</button>
-    <button class="lw-skip" onclick="dismissWidget()">Maybe later</button>
-  </div>
-
-  <div id="lw-success-view" class="lw-success" style="display:none">
-    <div class="lw-emoji">🎉</div>
-    <p>Thanks for saying hi! Really means a lot 🙏</p>
-  </div>
-</div>
-
-<script>
-(function() {
-  // ── CONFIG ──────────────────────────────────────────────────
-  const SUPABASE_URL     = 'https://vtfmaldbgrtxywmbulqy.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0Zm1hbGRiZ3J0eHl3bWJ1bHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzU0NzgsImV4cCI6MjA5MTQxMTQ3OH0.jxiItetrB0X6UwiKtw11sijnvITAGxt3vUpf0vqgOrY';
-  // ────────────────────────────────────────────────────────────
-
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const btn = document.getElementById('limb-widget-btn');
-  const panel = document.getElementById('limb-widget-panel');
-
-  // Don't show if already submitted
-  if (localStorage.getItem('lw_done') === '1') {
-    btn.style.display = 'none';
-    return;
-  }
-
-  // Animate in after delay
-  setTimeout(() => btn.classList.add('ready'), 100);
-
-  btn.addEventListener('click', () => {
-    panel.classList.toggle('open');
-    btn.textContent = panel.classList.contains('open') ? '×' : '👋';
-  });
-
-  window.closeWidget = function() {
-    panel.classList.remove('open');
-    btn.textContent = '👋';
-  };
-
-  window.dismissWidget = function() {
-    closeWidget();
-    // Show again next visit (don't set lw_done)
-  };
-
-  window.submitWidget = async function() {
-    const name   = document.getElementById('lw-name').value.trim();
-    const ig     = document.getElementById('lw-ig').value.trim();
-    const source = document.getElementById('lw-source').value;
-    const submitBtn = document.getElementById('lw-submit');
-
-    if (!name)   { document.getElementById('lw-name').focus(); return; }
-    if (!source) { document.getElementById('lw-source').focus(); return; }
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending…';
-
-    const { error } = await db.from('visitors').insert([{
-      name,
-      ig_handle: ig,
-      source,
-      visited_at: new Date().toISOString()
-    }]);
-
-    if (error) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Try again';
-      return;
-    }
-
-    localStorage.setItem('lw_done', '1');
-    document.getElementById('lw-form-view').style.display = 'none';
-    document.getElementById('lw-success-view').style.display = 'block';
-    btn.style.display = 'none';
-    setTimeout(closeWidget, 2500);
-  };
-})();
-</script>
 <body>
 
   <header class="site-header">
@@ -239,5 +32,151 @@
     </div>
   </footer>
 
-</body>
+  <!-- ── Floating Widget ── -->
+  <style>
+    #limb-widget-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      border: 1.5px solid #333;
+      color: #f0ede6;
+      font-size: 22px;
+      cursor: pointer;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      transition: transform 0.2s, border-color 0.2s;
+      opacity: 0;
+    }
+    #limb-widget-btn.ready { opacity: 1; animation: widget-pop 0.5s cubic-bezier(.34,1.56,.64,1) both; }
+    #limb-widget-btn:hover { transform: scale(1.1); border-color: #c084fc; }
+    @keyframes widget-pop {
+      from { opacity: 0; transform: scale(0.5) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    #limb-widget-panel {
+      position: fixed;
+      bottom: 92px;
+      right: 28px;
+      width: 300px;
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 18px;
+      padding: 24px;
+      z-index: 9998;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+      display: none;
+      font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+    #limb-widget-panel.open { display: block; animation: panel-rise 0.3s cubic-bezier(.34,1.56,.64,1) both; }
+    @keyframes panel-rise {
+      from { opacity: 0; transform: translateY(16px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .lw-close { position: absolute; top: 14px; right: 16px; background: none; border: none; color: #555; font-size: 18px; cursor: pointer; }
+    .lw-close:hover { color: #f0ede6; }
+    .lw-title { font-size: 15px; font-weight: 600; color: #f0ede6; margin-bottom: 4px; }
+    .lw-sub { font-size: 12px; color: #666; margin-bottom: 18px; line-height: 1.5; }
+    .lw-input { width: 100%; background: #1e1e1e; border: 1px solid #2e2e2e; border-radius: 10px; padding: 10px 14px; color: #f0ede6; font-family: inherit; font-size: 13px; outline: none; transition: border-color 0.2s; margin-bottom: 10px; box-sizing: border-box; }
+    .lw-input:focus { border-color: #c084fc; }
+    .lw-btn { width: 100%; background: #c084fc; border: none; border-radius: 10px; padding: 10px; color: #0e0e0e; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+    .lw-btn:hover { opacity: 0.85; }
+    .lw-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .lw-skip { display: block; text-align: center; margin-top: 10px; font-size: 12px; color: #555; cursor: pointer; background: none; border: none; width: 100%; font-family: inherit; }
+    .lw-skip:hover { color: #888; }
+    .lw-success { text-align: center; padding: 8px 0; }
+    .lw-success .lw-emoji { font-size: 36px; margin-bottom: 10px; }
+    .lw-success p { font-size: 13px; color: #888; line-height: 1.6; }
+    @media (max-width: 480px) {
+      #limb-widget-panel { right: 16px; left: 16px; width: auto; bottom: 80px; }
+      #limb-widget-btn { bottom: 20px; right: 20px; }
+    }
+  </style>
 
+  <button id="limb-widget-btn" aria-label="Say hi" title="Say hi 👋">👋</button>
+
+  <div id="limb-widget-panel">
+    <button class="lw-close" onclick="closeWidget()">×</button>
+    <div id="lw-form-view">
+      <p class="lw-title">Hey, you! 👋</p>
+      <p class="lw-sub">How did you find this blog? Drop your IG handle if you want to connect!</p>
+      <input class="lw-input" id="lw-name" placeholder="Your name" type="text"/>
+      <input class="lw-input" id="lw-ig" placeholder="@yourhandle (optional)" type="text"/>
+      <select class="lw-input" id="lw-source" style="appearance:none;cursor:pointer">
+        <option value="" disabled selected>How did you find this? 🤔</option>
+        <option value="Instagram">Instagram</option>
+        <option value="Google">Google</option>
+        <option value="Friend shared it">Friend shared it</option>
+        <option value="Other">Other</option>
+      </select>
+      <button class="lw-btn" id="lw-submit" onclick="submitWidget()">Send 🚀</button>
+      <button class="lw-skip" onclick="dismissWidget()">Maybe later</button>
+    </div>
+    <div id="lw-success-view" class="lw-success" style="display:none">
+      <div class="lw-emoji">🎉</div>
+      <p>Thanks for saying hi! Really means a lot 🙏</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  (function() {
+    const SUPABASE_URL      = 'https://vtfmaldbgrtxywmbulqy.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0Zm1hbGRiZ3J0eHl3bWJ1bHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzU0NzgsImV4cCI6MjA5MTQxMTQ3OH0.jxiItetrB0X6UwiKtw11sijnvITAGxt3vUpf0vqgOrY';
+
+    const db    = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const btn   = document.getElementById('limb-widget-btn');
+    const panel = document.getElementById('limb-widget-panel');
+
+    if (localStorage.getItem('lw_done') === '1') { btn.style.display = 'none'; return; }
+
+    setTimeout(() => btn.classList.add('ready'), 1500);
+
+    btn.addEventListener('click', () => {
+      panel.classList.toggle('open');
+      btn.textContent = panel.classList.contains('open') ? '×' : '👋';
+    });
+
+    window.closeWidget = function() {
+      panel.classList.remove('open');
+      btn.textContent = '👋';
+    };
+
+    window.dismissWidget = function() { closeWidget(); };
+
+    window.submitWidget = async function() {
+      const name      = document.getElementById('lw-name').value.trim();
+      const ig        = document.getElementById('lw-ig').value.trim();
+      const source    = document.getElementById('lw-source').value;
+      const submitBtn = document.getElementById('lw-submit');
+
+      if (!name)   { document.getElementById('lw-name').focus(); return; }
+      if (!source) { document.getElementById('lw-source').focus(); return; }
+
+      submitBtn.disabled    = true;
+      submitBtn.textContent = 'Sending…';
+
+      const { error } = await db.from('visitors').insert([{
+        name, ig_handle: ig, source,
+        visited_at: new Date().toISOString()
+      }]);
+
+      if (error) { submitBtn.disabled = false; submitBtn.textContent = 'Try again'; return; }
+
+      localStorage.setItem('lw_done', '1');
+      document.getElementById('lw-form-view').style.display  = 'none';
+      document.getElementById('lw-success-view').style.display = 'block';
+      btn.style.display = 'none';
+      setTimeout(closeWidget, 2500);
+    };
+  })();
+  </script>
+
+</body>
+</html>
