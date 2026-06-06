@@ -751,7 +751,7 @@ title: home
 
   <!-- ── NAV ── -->
   <nav id="nav">
-    <a href="/" class="logo">Limbaaaa <em>Writes</em></a>
+    <a href="/" class="logo">Limba <em>Writes</em></a>
     <div class="nav-center">
       <a href="#posts">Writing</a>
       <a href="#about">About</a>
@@ -765,14 +765,14 @@ title: home
 
   <!-- ── HERO ── -->
   <section class="hero">
-    <p class="hero-label">✦ Personal Blog by Deepak Limba</p>
+    <p class="hero-label">✦ Personal Blog by me</p>
     <h1>
       Thoughts,<br/>stories &
       <em>raw ideas.</em>
     </h1>
     <div class="hero-divider">
       <span></span>
-      <small>Est. 2026 · Jodhpur, India</small>
+      <small>Est. 2026 · </small>
       <span></span>
     </div>
     <p class="hero-sub">
@@ -789,12 +789,12 @@ title: home
   <!-- ── ABOUT STRIP ── -->
   <div class="about-strip">
     <div class="strip-item">
-      <span class="strip-num">12</span>
+      <span class="strip-num">{{ site.posts | size }}</span>
       <span class="strip-label">Posts Written</span>
     </div>
     <div class="strip-divider"></div>
     <div class="strip-item">
-      <span class="strip-num">5</span>
+      <span class="strip-num">4</span>
       <span class="strip-label">Topics Explored</span>
     </div>
     <div class="strip-divider"></div>
@@ -826,89 +826,33 @@ title: home
 
     <div class="grid">
 
-      <article class="post-card" data-cat="life">
-        <div class="post-img">
-          <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=900" alt="Writing" loading="lazy"/>
-          <span class="post-read">Read Article →</span>
-        </div>
-        <div class="post-meta">
-          <span class="post-cat">Life</span>
-          <div class="post-dot"></div>
-          <span class="post-date">Jun 05, 2026</span>
-        </div>
-        <h2 class="post-title">I Gave My Today to GitHub and AI — And It Was Worth It</h2>
-        <p class="post-excerpt">Didn't sleep much. First thing in the morning I opened GitHub. There's something addictive about building something that's completely yours.</p>
-      </article>
+      <!-- START JEKYLL LOOP: Pulls all posts from your CMS automatically -->
+      {% for post in site.posts %}
+      
+        <!-- Captures category for your design filters. Defaults to 'life' if empty -->
+        {% assign post_category = post.categories | first | default: "life" | downcase %}
 
-      <article class="post-card" data-cat="poetry">
-        <div class="post-img">
-          <img src="https://images.unsplash.com/photo-1516961642265-531546e84af2?auto=format&fit=crop&q=80&w=700" alt="Poetry" loading="lazy"/>
-          <span class="post-read">Read Article →</span>
-        </div>
-        <div class="post-meta">
-          <span class="post-cat">Poetry</span>
-          <div class="post-dot"></div>
-          <span class="post-date">Apr 06, 2026</span>
-        </div>
-        <h2 class="post-title">Poetry & Poem — What's the Difference, Really?</h2>
-        <p class="post-excerpt">You can see poetry in anything. You can listen to poetry, smell poetry. These are the things that separate us from all other life forms.</p>
-      </article>
+        <article class="post-card" data-cat="{{ post_category }}">
+          <a href="{{ post.url | relative_url }}" style="text-decoration: none; color: inherit; display: block;">
+            <div class="post-img">
+              <!-- Dynamically loads image from Front Matter, defaults to placeholder if empty -->
+              <img src="{{ post.image | default: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=900' | relative_url }}" alt="{{ post.title }}" loading="lazy"/>
+              <span class="post-read">Read Article →</span>
+            </div>
+            <div class="post-meta">
+              <span class="post-cat">{{ post_category | capitalize }}</span>
+              <div class="post-dot"></div>
+              <!-- Dynamically pulls your CMS publication date -->
+              <span class="post-date">{{ post.date | date: "%b %d, %Y" }}</span>
+            </div>
+            <h2 class="post-title">{{ post.title }}</h2>
+            <!-- Grabs the first 25 words of your post automatically -->
+            <p class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 25 }}</p>
+          </a>
+        </article>
 
-      <article class="post-card" data-cat="cinema">
-        <div class="post-img">
-          <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=700" alt="Cinema" loading="lazy"/>
-          <span class="post-read">Read Article →</span>
-        </div>
-        <div class="post-meta">
-          <span class="post-cat">Cinema</span>
-          <div class="post-dot"></div>
-          <span class="post-date">Apr 11, 2026</span>
-        </div>
-        <h2 class="post-title">A Trip to the Moon — On Visual Storytelling</h2>
-        <p class="post-excerpt">What does it mean to frame a shot? Every composition is a choice, and every choice is a statement about how you see the world.</p>
-      </article>
-
-      <article class="post-card" data-cat="life">
-        <div class="post-img">
-          <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80&w=700" alt="Thoughts" loading="lazy"/>
-          <span class="post-read">Read Article →</span>
-        </div>
-        <div class="post-meta">
-          <span class="post-cat">Life</span>
-          <div class="post-dot"></div>
-          <span class="post-date">Apr 07, 2026</span>
-        </div>
-        <h2 class="post-title">Third Post — Still Figuring This Out</h2>
-        <p class="post-excerpt">The blog is taking shape. Slowly learning that writing, like most things, gets better when you stop trying to make it perfect.</p>
-      </article>
-
-      <article class="post-card" data-cat="cinema">
-        <div class="post-img">
-          <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&q=80&w=700" alt="Film" loading="lazy"/>
-          <span class="post-read">Read Article →</span>
-        </div>
-        <div class="post-meta">
-          <span class="post-cat">Cinema</span>
-          <div class="post-dot"></div>
-          <span class="post-date">Apr 05, 2026</span>
-        </div>
-        <h2 class="post-title">My First Automated Blog — What a Headache</h2>
-        <p class="post-excerpt">The first post on this blog, written after hours of debugging Jekyll. Sometimes the process is the story.</p>
-      </article>
-
-      <article class="post-card" data-cat="tech">
-        <div class="post-img">
-          <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=700" alt="Tech" loading="lazy"/>
-          <span class="post-read">Read Article →</span>
-        </div>
-        <div class="post-meta">
-          <span class="post-cat">Tech</span>
-          <div class="post-dot"></div>
-          <span class="post-date">Jun 06, 2026</span>
-        </div>
-        <h2 class="post-title">Building a CMS for My Jekyll Blog From Scratch</h2>
-        <p class="post-excerpt">No WordPress, no Webflow — just GitHub API, a custom HTML page, and the sheer will to not open another drag-and-drop editor.</p>
-      </article>
+      {% endfor %}
+      <!-- END JEKYLL LOOP -->
 
     </div>
   </div>
@@ -919,7 +863,7 @@ title: home
     <p class="quote-text">
       You can see poetry in anything. You can listen to poetry, smell poetry. These are the things which tell us we are human.
     </p>
-    <span class="quote-author">— Deepak Limba, POETRY AND POEM</span>
+    <span class="quote-author">— me, POETRY AND POEM</span>
   </div>
 
   <!-- ── NEWSLETTER ── -->
@@ -935,7 +879,7 @@ title: home
   <!-- ── FOOTER ── -->
   <footer>
     <div class="footer-inner">
-      <span class="footer-logo">Limbaaaa <em>Writes</em></span>
+      <span class="footer-logo">Limba <em>Writes</em></span>
       <span class="footer-copy">© 2026 Deepak Limba — Built with Jekyll</span>
       <div class="footer-socials">
         <a href="#">Instagram</a>
@@ -946,7 +890,6 @@ title: home
 
   <!-- Back to Top -->
   <button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-
   <script>
   (function(){
     // ── Cursor ──────────────────────────────────────
