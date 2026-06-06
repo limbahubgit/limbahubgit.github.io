@@ -317,7 +317,7 @@ permalink: /cms.html
 
 <script>
   // ── CONFIG ────────────────────────────────────────────────────
-  const CMS_PASSWORD = 'vitocorleone10'; // Change this!
+  const CMS_PASSWORD = 'YOUR_CMS_PASSWORD'; // Change this!
   // ─────────────────────────────────────────────────────────────
 
   let coverFile = null;
@@ -456,8 +456,8 @@ permalink: /cms.html
       const isVideo = file.type.startsWith('video');
       const filename = sanitizeFilename(file.name);
       const tag = isVideo
-        ? `\n<video controls src="/assets/media/${filename}" style="max-width:100%"></video>\n`
-        : `\n![${file.name}](/assets/media/${filename})\n`;
+        ? `\n<video controls src="https://limbahubgit.github.io/assets/media/${filename}" style="max-width:100%"></video>\n`
+        : `\n![${file.name}](https://limbahubgit.github.io/assets/media/${filename})\n`;
       ta.value += tag;
       mediaFiles.push({ file, filename, base64: e.target.result.split(',')[1] });
       renderPreviews();
@@ -519,11 +519,12 @@ permalink: /cms.html
       const filename = `${date}-${slug}.md`;
 
       // Upload cover image
+      const siteUrl = `https://${user}.github.io`;
       let coverPath = '';
       if (coverFile && coverBase64) {
         const coverName = sanitizeFilename(coverFile.name);
         await ghUpload(token, user, repo, `assets/media/${coverName}`, coverBase64);
-        coverPath = `/assets/media/${coverName}`;
+        coverPath = `${siteUrl}/assets/media/${coverName}`;
       }
 
       // Upload media files
