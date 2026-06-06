@@ -1,0 +1,1035 @@
+---
+layout: default
+title: home
+---
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Limbaaaa Writes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ═══════════════════════════════════════════════
+       VARIABLES
+    ═══════════════════════════════════════════════ */
+    :root {
+      --bg:        #F7F3ED;
+      --bg2:       #EFEAD9;
+      --text:      #1A1612;
+      --muted:     #7A7268;
+      --light:     #B0A898;
+      --border:    #DDD8CE;
+      --gold:      #C09A5A;
+      --gold-dim:  #F0E8D5;
+      --card-bg:   #FFFFFF;
+      --shadow:    rgba(26,22,18,0.06);
+    }
+
+    [data-theme="dark"] {
+      --bg:        #0D0C0A;
+      --bg2:       #141210;
+      --text:      #EDE8DF;
+      --muted:     #7A7268;
+      --light:     #4A4640;
+      --border:    #252220;
+      --gold:      #C09A5A;
+      --gold-dim:  #1E1A12;
+      --card-bg:   #131210;
+      --shadow:    rgba(0,0,0,0.4);
+    }
+
+    /* ═══════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.5s ease, color 0.5s ease;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ═══════════════════════════════════════════════
+       CUSTOM CURSOR
+    ═══════════════════════════════════════════════ */
+    #cursor-dot {
+      position: fixed; top: 0; left: 0;
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+    }
+
+    #cursor-ring {
+      position: fixed; top: 0; left: 0;
+      width: 36px; height: 36px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: transform 0.12s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s;
+      opacity: 0.6;
+    }
+
+    body.cursor-hover #cursor-dot { width: 10px; height: 10px; }
+    body.cursor-hover #cursor-ring { width: 56px; height: 56px; opacity: 0.3; }
+
+    /* ═══════════════════════════════════════════════
+       GRAIN OVERLAY
+    ═══════════════════════════════════════════════ */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 9990;
+    }
+
+    /* ═══════════════════════════════════════════════
+       PROGRESS BAR
+    ═══════════════════════════════════════════════ */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 1px;
+      background: var(--gold); z-index: 9997; width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* ═══════════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════════ */
+    nav {
+      position: sticky; top: 0; z-index: 500;
+      padding: 0 5%;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(13,12,10,0);
+      backdrop-filter: blur(0px);
+      border-bottom: 1px solid transparent;
+      transition: all 0.4s ease;
+    }
+
+    nav.scrolled {
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      backdrop-filter: blur(20px);
+      border-bottom-color: var(--border);
+    }
+
+    [data-theme="light"] nav { background: rgba(247,243,237,0); }
+    [data-theme="light"] nav.scrolled { background: color-mix(in srgb, var(--bg) 90%, transparent); }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      position: relative;
+    }
+
+    .logo em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .nav-center {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 2.5rem;
+    }
+
+    .nav-center a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-center a::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 0; right: 100%;
+      height: 1px; background: var(--gold);
+      transition: right 0.3s ease;
+    }
+
+    .nav-center a:hover { color: var(--text); }
+    .nav-center a:hover::after { right: 0; }
+
+    .nav-right { display: flex; align-items: center; gap: 1.2rem; }
+
+    .theme-btn {
+      background: none; border: 1px solid var(--border);
+      border-radius: 4px; padding: 0.4rem 0.8rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.1em;
+      color: var(--muted); cursor: none;
+      transition: all 0.2s;
+    }
+
+    .theme-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .nav-toggle {
+      display: none; background: none; border: none;
+      color: var(--text); font-size: 1.2rem; cursor: none;
+    }
+
+    /* ═══════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════ */
+    .hero {
+      min-height: 92vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 6rem 5% 4rem;
+      position: relative;
+    }
+
+    /* Decorative corner marks */
+    .hero::before, .hero::after {
+      content: '';
+      position: absolute;
+      width: 60px; height: 60px;
+      border-color: var(--border);
+      border-style: solid;
+      opacity: 0.5;
+    }
+
+    .hero::before { top: 40px; left: 5%; border-width: 1px 0 0 1px; }
+    .hero::after  { bottom: 40px; right: 5%; border-width: 0 1px 1px 0; }
+
+    .hero-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.2s both;
+    }
+
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 9vw, 7.5rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fade-up 1s ease 0.4s both;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+      display: block;
+    }
+
+    .hero-divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.6s both;
+    }
+
+    .hero-divider span { width: 40px; height: 1px; background: var(--border); }
+    .hero-divider small {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 3.5rem;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.7s both;
+    }
+
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 0.8rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.9rem 2rem;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.9s both;
+    }
+
+    .hero-cta:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    .hero-cta .arrow {
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    .hero-cta:hover .arrow { transform: translateX(4px); }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      opacity: 0;
+      animation: fade-up 0.8s ease 1.2s both;
+    }
+
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scroll-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scroll-pulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(0.7); }
+    }
+
+    /* ═══════════════════════════════════════════════
+       ABOUT STRIP
+    ═══════════════════════════════════════════════ */
+    .about-strip {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      overflow: hidden;
+    }
+
+    .strip-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0.3rem; flex: 1; text-align: center;
+    }
+
+    .strip-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .strip-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .strip-divider { width: 1px; height: 40px; background: var(--border); }
+
+    /* ═══════════════════════════════════════════════
+       SECTION HEADER
+    ═══════════════════════════════════════════════ */
+    .section-header {
+      max-width: 1200px;
+      margin: 5rem auto 3rem;
+      padding: 0 5%;
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+
+    .section-title em { font-style: italic; color: var(--gold); }
+
+    .section-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+
+    /* Filter tags */
+    .filter-wrap {
+      max-width: 1200px;
+      margin: 0 auto 3rem;
+      padding: 0 5%;
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+    }
+
+    .ftag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 0.45rem 1rem;
+      background: none;
+      cursor: none;
+      transition: all 0.2s;
+    }
+
+    .ftag.active, .ftag:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    /* ═══════════════════════════════════════════════
+       POST GRID
+    ═══════════════════════════════════════════════ */
+    .grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 5% 6rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem 2.5rem;
+    }
+
+    /* Featured first post */
+    .grid .post-card:first-child {
+      grid-column: span 2;
+    }
+
+    .grid .post-card:first-child .post-img {
+      aspect-ratio: 16/9;
+    }
+
+    .grid .post-card:first-child .post-title {
+      font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+    }
+
+    .post-card {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .post-card.visible { opacity: 1; transform: none; }
+    .post-card:nth-child(2) { transition-delay: 0.1s; }
+    .post-card:nth-child(3) { transition-delay: 0.2s; }
+    .post-card:nth-child(4) { transition-delay: 0.05s; }
+    .post-card:nth-child(5) { transition-delay: 0.15s; }
+    .post-card:nth-child(6) { transition-delay: 0.25s; }
+
+    .post-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      border-radius: 2px;
+      margin-bottom: 1.4rem;
+      position: relative;
+      background: var(--bg2);
+    }
+
+    .post-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s cubic-bezier(0.16,1,0.3,1), filter 0.5s ease;
+      filter: grayscale(20%);
+    }
+
+    .post-card:hover .post-img img {
+      transform: scale(1.06);
+      filter: grayscale(0%);
+    }
+
+    /* Image overlay */
+    .post-img::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(13,12,10,0.5) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .post-card:hover .post-img::after { opacity: 1; }
+
+    .post-read {
+      position: absolute; bottom: 1rem; left: 1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #EDE8DF;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: all 0.3s ease 0.1s;
+    }
+
+    .post-card:hover .post-read { opacity: 1; transform: none; }
+
+    .post-meta {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .post-cat {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .post-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border); }
+
+    .post-date {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .post-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+      font-weight: 500;
+      line-height: 1.3;
+      margin-bottom: 0.7rem;
+      transition: color 0.2s;
+    }
+
+    .post-card:hover .post-title { color: var(--gold); }
+
+    .post-excerpt {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-weight: 300;
+    }
+
+    /* ═══════════════════════════════════════════════
+       QUOTE BREAK
+    ═══════════════════════════════════════════════ */
+    .quote-break {
+      max-width: 900px;
+      margin: 0 auto 6rem;
+      padding: 5rem 5%;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .quote-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 8rem;
+      line-height: 0.5;
+      color: var(--gold);
+      opacity: 0.2;
+      position: absolute;
+      top: 3rem; left: 5%;
+    }
+
+    .quote-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.6;
+      color: var(--text);
+      position: relative;
+    }
+
+    .quote-author {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 2rem;
+      display: block;
+    }
+
+    /* ═══════════════════════════════════════════════
+       NEWSLETTER
+    ═══════════════════════════════════════════════ */
+    .newsletter {
+      max-width: 600px;
+      margin: 0 auto 6rem;
+      padding: 0 5%;
+      text-align: center;
+    }
+
+    .newsletter h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    .newsletter h3 em { font-style: italic; color: var(--gold); }
+
+    .newsletter p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .nl-form {
+      display: flex; gap: 0; max-width: 420px; margin: 0 auto;
+      border: 1px solid var(--border); border-radius: 2px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .nl-form:focus-within { border-color: var(--gold); }
+
+    .nl-input {
+      flex: 1; padding: 0.9rem 1.2rem;
+      background: var(--card-bg); border: none; outline: none;
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .nl-input::placeholder { color: var(--muted); }
+
+    .nl-btn {
+      padding: 0.9rem 1.5rem;
+      background: var(--gold); border: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #0D0C0A;
+      cursor: none;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    .nl-btn:hover { opacity: 0.85; }
+
+    /* ═══════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 5%;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+    }
+
+    .footer-logo em { font-style: italic; color: var(--gold); }
+
+    .footer-copy {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .footer-socials { display: flex; gap: 1.2rem; }
+
+    .footer-socials a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    .footer-socials a:hover { color: var(--gold); }
+
+    /* ═══════════════════════════════════════════════
+       BACK TO TOP
+    ═══════════════════════════════════════════════ */
+    #btt {
+      position: fixed; bottom: 2rem; right: 2rem;
+      width: 44px; height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: none;
+      opacity: 0; transform: translateY(10px);
+      transition: all 0.3s ease;
+      z-index: 400;
+    }
+
+    #btt.show { opacity: 1; transform: none; }
+    #btt:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ═══════════════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════════════ */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+      .grid .post-card:first-child { grid-column: span 2; }
+      .nav-center { display: none; }
+      .nav-toggle { display: block; }
+    }
+
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: 1fr; }
+      .grid .post-card:first-child { grid-column: span 1; }
+      .about-strip { flex-wrap: wrap; }
+      .strip-divider { display: none; }
+      body { cursor: auto; }
+      #cursor-dot, #cursor-ring { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Progress -->
+  <div id="progress"></div>
+
+  <!-- ── NAV ── -->
+  <nav id="nav">
+    <a href="/" class="logo">Limbaaaa <em>Writes</em></a>
+    <div class="nav-center">
+      <a href="#posts">Writing</a>
+      <a href="#about">About</a>
+      <a href="#contact">Connect</a>
+    </div>
+    <div class="nav-right">
+      <button class="theme-btn" id="themeBtn">Light</button>
+      <button class="nav-toggle" id="navToggle">☰</button>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <p class="hero-label">✦ Personal Blog by Deepak Limba</p>
+    <h1>
+      Thoughts,<br/>stories &
+      <em>raw ideas.</em>
+    </h1>
+    <div class="hero-divider">
+      <span></span>
+      <small>Est. 2026 · Jodhpur, India</small>
+      <span></span>
+    </div>
+    <p class="hero-sub">
+      A space where I write about what I see, feel, and think — cinema, life, creativity, and everything in between.
+    </p>
+    <a href="#posts" class="hero-cta">
+      Read the blog <span class="arrow">→</span>
+    </a>
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT STRIP ── -->
+  <div class="about-strip">
+    <div class="strip-item">
+      <span class="strip-num">12</span>
+      <span class="strip-label">Posts Written</span>
+    </div>
+    <div class="strip-divider"></div>
+    <div class="strip-item">
+      <span class="strip-num">5</span>
+      <span class="strip-label">Topics Explored</span>
+    </div>
+    <div class="strip-divider"></div>
+    <div class="strip-item">
+      <span class="strip-num">∞</span>
+      <span class="strip-label">Ideas Brewing</span>
+    </div>
+    <div class="strip-divider"></div>
+    <div class="strip-item">
+      <span class="strip-num">1</span>
+      <span class="strip-label">Voice, Unapologetically</span>
+    </div>
+  </div>
+
+  <!-- ── POSTS ── -->
+  <div id="posts">
+    <div class="section-header">
+      <h2 class="section-title">Recent <em>Writing</em></h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="filter-wrap">
+      <button class="ftag active" data-filter="all">All</button>
+      <button class="ftag" data-filter="cinema">Cinema</button>
+      <button class="ftag" data-filter="life">Life</button>
+      <button class="ftag" data-filter="poetry">Poetry</button>
+      <button class="ftag" data-filter="tech">Tech</button>
+    </div>
+
+    <div class="grid">
+
+      <article class="post-card" data-cat="life">
+        <div class="post-img">
+          <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=900" alt="Writing" loading="lazy"/>
+          <span class="post-read">Read Article →</span>
+        </div>
+        <div class="post-meta">
+          <span class="post-cat">Life</span>
+          <div class="post-dot"></div>
+          <span class="post-date">Jun 05, 2026</span>
+        </div>
+        <h2 class="post-title">I Gave My Today to GitHub and AI — And It Was Worth It</h2>
+        <p class="post-excerpt">Didn't sleep much. First thing in the morning I opened GitHub. There's something addictive about building something that's completely yours.</p>
+      </article>
+
+      <article class="post-card" data-cat="poetry">
+        <div class="post-img">
+          <img src="https://images.unsplash.com/photo-1516961642265-531546e84af2?auto=format&fit=crop&q=80&w=700" alt="Poetry" loading="lazy"/>
+          <span class="post-read">Read Article →</span>
+        </div>
+        <div class="post-meta">
+          <span class="post-cat">Poetry</span>
+          <div class="post-dot"></div>
+          <span class="post-date">Apr 06, 2026</span>
+        </div>
+        <h2 class="post-title">Poetry & Poem — What's the Difference, Really?</h2>
+        <p class="post-excerpt">You can see poetry in anything. You can listen to poetry, smell poetry. These are the things that separate us from all other life forms.</p>
+      </article>
+
+      <article class="post-card" data-cat="cinema">
+        <div class="post-img">
+          <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=700" alt="Cinema" loading="lazy"/>
+          <span class="post-read">Read Article →</span>
+        </div>
+        <div class="post-meta">
+          <span class="post-cat">Cinema</span>
+          <div class="post-dot"></div>
+          <span class="post-date">Apr 11, 2026</span>
+        </div>
+        <h2 class="post-title">A Trip to the Moon — On Visual Storytelling</h2>
+        <p class="post-excerpt">What does it mean to frame a shot? Every composition is a choice, and every choice is a statement about how you see the world.</p>
+      </article>
+
+      <article class="post-card" data-cat="life">
+        <div class="post-img">
+          <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80&w=700" alt="Thoughts" loading="lazy"/>
+          <span class="post-read">Read Article →</span>
+        </div>
+        <div class="post-meta">
+          <span class="post-cat">Life</span>
+          <div class="post-dot"></div>
+          <span class="post-date">Apr 07, 2026</span>
+        </div>
+        <h2 class="post-title">Third Post — Still Figuring This Out</h2>
+        <p class="post-excerpt">The blog is taking shape. Slowly learning that writing, like most things, gets better when you stop trying to make it perfect.</p>
+      </article>
+
+      <article class="post-card" data-cat="cinema">
+        <div class="post-img">
+          <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&q=80&w=700" alt="Film" loading="lazy"/>
+          <span class="post-read">Read Article →</span>
+        </div>
+        <div class="post-meta">
+          <span class="post-cat">Cinema</span>
+          <div class="post-dot"></div>
+          <span class="post-date">Apr 05, 2026</span>
+        </div>
+        <h2 class="post-title">My First Automated Blog — What a Headache</h2>
+        <p class="post-excerpt">The first post on this blog, written after hours of debugging Jekyll. Sometimes the process is the story.</p>
+      </article>
+
+      <article class="post-card" data-cat="tech">
+        <div class="post-img">
+          <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=700" alt="Tech" loading="lazy"/>
+          <span class="post-read">Read Article →</span>
+        </div>
+        <div class="post-meta">
+          <span class="post-cat">Tech</span>
+          <div class="post-dot"></div>
+          <span class="post-date">Jun 06, 2026</span>
+        </div>
+        <h2 class="post-title">Building a CMS for My Jekyll Blog From Scratch</h2>
+        <p class="post-excerpt">No WordPress, no Webflow — just GitHub API, a custom HTML page, and the sheer will to not open another drag-and-drop editor.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <!-- ── QUOTE ── -->
+  <div class="quote-break">
+    <span class="quote-mark">"</span>
+    <p class="quote-text">
+      You can see poetry in anything. You can listen to poetry, smell poetry. These are the things which tell us we are human.
+    </p>
+    <span class="quote-author">— Deepak Limba, POETRY AND POEM</span>
+  </div>
+
+  <!-- ── NEWSLETTER ── -->
+  <section class="newsletter" id="contact">
+    <h3>Stay in the <em>loop</em></h3>
+    <p>Get new posts delivered to your inbox. No spam — just writing, when I feel like it.</p>
+    <div class="nl-form">
+      <input type="email" class="nl-input" placeholder="your@email.com"/>
+      <button class="nl-btn" onclick="alert('Thanks!')">Subscribe</button>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-logo">Limbaaaa <em>Writes</em></span>
+      <span class="footer-copy">© 2026 Deepak Limba — Built with Jekyll</span>
+      <div class="footer-socials">
+        <a href="#">Instagram</a>
+        <a href="#">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+  <script>
+  (function(){
+    // ── Cursor ──────────────────────────────────────
+    const dot  = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx=0, my=0, rx=0, ry=0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left  = mx + 'px';
+      dot.style.top   = my + 'px';
+    });
+
+    (function animRing(){
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(animRing);
+    })();
+
+    document.querySelectorAll('a,button,.post-card,.ftag').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+
+    // ── Progress ─────────────────────────────────────
+    const pb = document.getElementById('progress');
+    window.addEventListener('scroll', () => {
+      const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+      pb.style.width = pct + '%';
+    });
+
+    // ── Nav scroll ───────────────────────────────────
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+      document.getElementById('btt').classList.toggle('show', window.scrollY > 400);
+    });
+
+    // ── Theme ────────────────────────────────────────
+    const html = document.documentElement;
+    const themeBtn = document.getElementById('themeBtn');
+    const saved = localStorage.getItem('lw-theme') || 'dark';
+    html.setAttribute('data-theme', saved);
+    themeBtn.textContent = saved === 'dark' ? 'Light' : 'Dark';
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      const next = isDark ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('lw-theme', next);
+      themeBtn.textContent = next === 'dark' ? 'Light' : 'Dark';
+    });
+
+    // ── Reveal on scroll ─────────────────────────────
+    const cards = document.querySelectorAll('.post-card');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    cards.forEach(c => obs.observe(c));
+
+    // ── Filter ───────────────────────────────────────
+    document.querySelectorAll('.ftag').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.ftag').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        cards.forEach(c => {
+          const show = f === 'all' || c.dataset.cat === f;
+          c.style.display = show ? 'flex' : 'none';
+        });
+      });
+    });
+
+    // ── Image lazy load ──────────────────────────────
+    document.querySelectorAll('.post-img img').forEach(img => {
+      const show = () => img.style.opacity = '1';
+      img.style.opacity = '0';
+      img.style.transition = 'opacity 0.5s ease';
+      if(img.complete) show(); else img.addEventListener('load', show);
+    });
+  })();
+  </script>
+</body>
+</html>
