@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: post
 title: "POETRY AND POEM"
 date: 2026-04-06
 ---
