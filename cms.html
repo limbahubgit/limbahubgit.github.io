@@ -470,8 +470,27 @@ permalink: /cms.html
       const reader = new FileReader();
       reader.onload = e => {
         const filename = sanitizeFilename(file.name);
+        const isVideo = file.type.startsWith('video');
+        const ta = document.getElementById('post-content');
+        
+        // Build the markdown tag
+        const tag = isVideo
+          ? \n<video controls src="https://fifa1hubgit.github.io/assets/media/${filename}" style="max-width:100%"></video>\n
+          : \n![${file.name}](https://fifa1hubgit.github.io/assets/media/${filename})\n;
+        
+        // Insert at cursor position (or append if no cursor)
+        if (ta.selectionStart || ta.selectionStart === 0) {
+          const start = ta.selectionStart;
+          const end = ta.selectionEnd;
+          ta.value = ta.value.substring(0, start) + tag + ta.value.substring(end);
+          ta.selectionStart = ta.selectionEnd = start + tag.length;
+        } else {
+          ta.value += tag;
+        }
+        
         mediaFiles.push({ file, filename, base64: e.target.result.split(',')[1], src: e.target.result });
         renderPreviews();
+        ta.focus();
       };
       reader.readAsDataURL(file);
     });
