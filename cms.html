@@ -540,7 +540,7 @@ permalink: /cms.html
       fm += `---\n\n`;
 
       const fullContent = fm + content;
-
+const encoded = btoa(unescape(encodeURIComponent(fullContent)));
       await ghUpload(token, user, repo, `_posts/${filename}`, encoded);
 
       toast('🎉 Post published! Live in ~1 min.', 'ok');
