@@ -540,23 +540,22 @@ permalink: /cms.html
       fm += `---\n\n`;
 
       // 1. Create a blank space to hold our automatic image links
-let automaticImages = "";
+var automaticImages = "";
 
 // 2. Check if your media files container has any photos in it
 if (typeof mediaFiles !== 'undefined' && mediaFiles.length > 0) {
-    // Loop through each photo and build the markdown code for it
-    mediaFiles.forEach(file => {
-        automaticImages += \n\n![Blog Image](/assets/media/${file.name});
+    mediaFiles.forEach(function(file) {
+        automaticImages = automaticImages + "\n\n![Blog Image](/assets/media/" + file.name + ")";
     });
 } 
 // Safety check: in case your code spells it with an underscore (media_files)
 else if (typeof media_files !== 'undefined' && media_files.length > 0) {
-    media_files.forEach(file => {
-        automaticImages += \n\n![Blog Image](/assets/media/${file.name});
+    media_files.forEach(function(file) {
+        automaticImages = automaticImages + "\n\n![Blog Image](/assets/media/" + file.name + ")";
     });
 }
 
-// 3. Glue everything together: Front Matter + Your Text + Your Auto Images!
+// 3. Glue everything together
 const fullcontent = fm + content + automaticImages;
       const encoded = btoa(unescape(encodeURIComponent(fullContent)));
 
