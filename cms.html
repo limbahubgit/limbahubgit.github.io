@@ -317,7 +317,7 @@ permalink: /cms.html
 
 <script>
   // ── CONFIG ────────────────────────────────────────────────────
-  const CMS_PASSWORD = 'vitocorleone10'; // Change this!
+  const CMS_PASSWORD = 'vitocorleone10';
   // ─────────────────────────────────────────────────────────────
 
   let coverFile = null;
@@ -334,7 +334,6 @@ permalink: /cms.html
       document.getElementById('cms').style.display = 'block';
       document.getElementById('publish-bar').classList.add('show');
       initSettings();
-      // Set today's date
       document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
     } else {
       document.getElementById('login-err').style.display = 'block';
@@ -372,14 +371,14 @@ permalink: /cms.html
     document.getElementById('gh-user').value  = user;
     document.getElementById('gh-repo').value  = repo;
     document.getElementById('token-input').value = token;
-    if (token) document.getElementById('token-display').textContent = '✅ Token saved: ' + token.slice(0,8) + '...';
+    if (token) document.getElementById('token-display').textContent = 'Token saved: ' + token.slice(0,8) + '...';
   }
 
   function saveToken() {
     const t = document.getElementById('token-input').value.trim();
     if (!t) { toast('Enter a token first!', 'err'); return; }
     localStorage.setItem('gh_token', t);
-    document.getElementById('token-display').textContent = '✅ Token saved: ' + t.slice(0,8) + '...';
+    document.getElementById('token-display').textContent = 'Token saved: ' + t.slice(0,8) + '...';
     toast('Token saved!', 'ok');
   }
 
@@ -426,7 +425,7 @@ permalink: /cms.html
     const ta = document.getElementById('post-content');
     const s = ta.selectionStart, e = ta.selectionEnd;
     const sel = ta.value.substring(s, e) || 'link text';
-    ta.value = ta.value.substring(0, s) + `[${sel}](${url})` + ta.value.substring(e);
+    ta.value = ta.value.substring(0, s) + '[' + sel + '](' + url + ')' + ta.value.substring(e);
   }
 
   // ── Media Handling ────────────────────────────────────────────
@@ -437,7 +436,7 @@ permalink: /cms.html
     reader.onload = e => {
       coverBase64 = e.target.result.split(',')[1];
       document.getElementById('cover-preview').innerHTML =
-        `<img src="${e.target.result}" style="max-height:160px;border-radius:8px;border:1px solid var(--border)"/>`;
+        '<img src="' + e.target.result + '" style="max-height:160px;border-radius:8px;border:1px solid var(--border)"/>';
     };
     reader.readAsDataURL(file);
   }
@@ -456,29 +455,27 @@ permalink: /cms.html
       const isVideo = file.type.startsWith('video');
       const filename = sanitizeFilename(file.name);
       const tag = isVideo
-        ? `\n<video controls src="https://limbahubgit.github.io/assets/media/${filename}" style="max-width:100%"></video>\n`
-        : `\n![${file.name}](https://limbahubgit.github.io/assets/media/${filename})\n`;
+        ? '\n<video controls src="https://limbahubgit.github.io/assets/media/' + filename + '" style="max-width:100%"></video>\n'
+        : '\n![' + file.name + '](https://limbahubgit.github.io/assets/media/' + filename + ')\n';
       ta.value += tag;
-      mediaFiles.push({ file, filename, base64: e.target.result.split(',')[1] });
+      mediaFiles.push({ file, filename, base64: e.target.result.split(',')[1], src: e.target.result });
       renderPreviews();
     };
     reader.readAsDataURL(file);
   }
 
   function handleMediaFiles(files) {
-    Array.from(files).forEach(file => {
+    Array.from(files).forEach(function(file) {
       const reader = new FileReader();
-      reader.onload = e => {
+      reader.onload = function(e) {
         const filename = sanitizeFilename(file.name);
         const isVideo = file.type.startsWith('video');
         const ta = document.getElementById('post-content');
         
-        // Build the markdown tag
         const tag = isVideo
-          ? \n<video controls src="https://fifa1hubgit.github.io/assets/media/${filename}" style="max-width:100%"></video>\n
-          : \n![${file.name}](https://fifa1hubgit.github.io/assets/media/${filename})\n;
+          ? '\n<video controls src="https://limbahubgit.github.io/assets/media/' + filename + '" style="max-width:100%"></video>\n'
+          : '\n![' + file.name + '](https://limbahubgit.github.io/assets/media/' + filename + ')\n';
         
-        // Insert at cursor position (or append if no cursor)
         if (ta.selectionStart || ta.selectionStart === 0) {
           const start = ta.selectionStart;
           const end = ta.selectionEnd;
@@ -498,14 +495,12 @@ permalink: /cms.html
 
   function renderPreviews() {
     const grid = document.getElementById('media-preview');
-    grid.innerHTML = mediaFiles.map((m, i) => `
-      <div class="preview-item">
-        ${m.file.type.startsWith('video')
-          ? `<video src="${m.src}" muted></video>`
-          : `<img src="${m.src}"/>`}
-        <button class="remove" onclick="removeMedia(${i})">×</button>
-      </div>
-    `).join('');
+    grid.innerHTML = mediaFiles.map(function(m, i) {
+      return '<div class="preview-item">' +
+        (m.file.type.startsWith('video') ? '<video src="' + m.src + '" muted></video>' : '<img src="' + m.src + '"/>') +
+        '<button class="remove" onclick="removeMedia(' + i + ')">&times;</button>' +
+      '</div>';
+    }).join('');
   }
 
   function removeMedia(i) { mediaFiles.splice(i, 1); renderPreviews(); }
@@ -535,34 +530,32 @@ permalink: /cms.html
 
     try {
       const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      const filename = `${date}-${slug}.md`;
+      const filename = date + '-' + slug + '.md';
 
-      // Upload cover image
-      const siteUrl = `https://${user}.github.io`;
+      const siteUrl = 'https://' + user + '.github.io';
       let coverPath = '';
       if (coverFile && coverBase64) {
         const coverName = sanitizeFilename(coverFile.name);
-        await ghUpload(token, user, repo, `assets/media/${coverName}`, coverBase64);
-        coverPath = `${siteUrl}/assets/media/${coverName}`;
+        await ghUpload(token, user, repo, 'assets/media/' + coverName, coverBase64);
+        coverPath = siteUrl + '/assets/media/' + coverName;
       }
 
-      // Upload media files
       for (const m of mediaFiles) {
-        await ghUpload(token, user, repo, `assets/media/${m.filename}`, m.base64);
+        await ghUpload(token, user, repo, 'assets/media/' + m.filename, m.base64);
       }
 
-      // Build front matter
-      let fm = `---\nlayout: post\ntitle: "${title.replace(/"/g,'\\"')}"\ndate: ${date}\n`;
-      if (cat)      fm += `categories: ${cat}\n`;
-      if (excerpt)  fm += `excerpt: "${excerpt.replace(/"/g,'\\"')}"\n`;
-      if (coverPath) fm += `image: ${coverPath}\n`;
-      fm += `---\n\n`;
+      let fm = '---\nlayout: post\ntitle: "' + title.replace(/"/g,'\\"') + '"\ndate: ' + date + '\n';
+      if (cat)      fm += 'categories: ' + cat + '\n';
+      if (excerpt)  fm += 'excerpt: "' + excerpt.replace(/"/g,'\\"') + '"\n';
+      if (coverPath) fm += 'image: ' + coverPath + '\n';
+      fm += '---\n\n';
 
       const fullContent = fm + content;
-const encoded = btoa(unescape(encodeURIComponent(fullContent)));
-      await ghUpload(token, user, repo, `_posts/${filename}`, encoded);
+      const encoded = btoa(unescape(encodeURIComponent(fullContent)));
 
-      toast('🎉 Post published! Live in ~1 min.', 'ok');
+      await ghUpload(token, user, repo, '_posts/' + filename, encoded);
+
+      toast('Post published! Live in ~1 min.', 'ok');
       clearForm();
     } catch (err) {
       console.error(err);
@@ -570,25 +563,24 @@ const encoded = btoa(unescape(encodeURIComponent(fullContent)));
     }
 
     btn.disabled = false;
-    btn.innerHTML = '🚀 Publish Post';
+    btn.innerHTML = 'Publish Post';
   }
 
   async function ghUpload(token, user, repo, path, base64content) {
-    // Check if file exists (to get SHA for update)
     let sha = null;
     try {
-      const check = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${path}`, {
-        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+      const check = await fetch('https://api.github.com/repos/' + user + '/' + repo + '/contents/' + path, {
+        headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }
       });
       if (check.ok) { const d = await check.json(); sha = d.sha; }
     } catch (_) {}
 
-    const body = { message: `Add ${path}`, content: base64content };
+    const body = { message: 'Add ' + path, content: base64content };
     if (sha) body.sha = sha;
 
-    const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${path}`, {
+    const res = await fetch('https://api.github.com/repos/' + user + '/' + repo + '/contents/' + path, {
       method: 'PUT',
-      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
 
@@ -614,29 +606,30 @@ const encoded = btoa(unescape(encodeURIComponent(fullContent)));
     list.innerHTML = '<div style="text-align:center;padding:40px"><div class="spinner"></div></div>';
 
     try {
-      const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/_posts`, {
-        headers: { Authorization: `token ${token}` }
+      const res = await fetch('https://api.github.com/repos/' + user + '/' + repo + '/contents/_posts', {
+        headers: { Authorization: 'token ' + token }
       });
+      if (!res.ok) throw new Error('GitHub ' + res.status);
       const files = await res.json();
       if (!Array.isArray(files) || files.length === 0) {
         list.innerHTML = '<p class="empty-state">No posts yet. Write your first one!</p>';
         return;
       }
-      list.innerHTML = [...files].reverse().map(f => {
+      list.innerHTML = files.slice().reverse().map(function(f) {
         const name = f.name.replace('.md','').replace(/^\d{4}-\d{2}-\d{2}-/,'').replace(/-/g,' ');
-        const date = f.name.match(/^(\d{4}-\d{2}-\d{2})/)?.[1] || '';
-        return `
-          <div class="post-card">
-            <div class="post-card-info">
-              <h3>${name.charAt(0).toUpperCase() + name.slice(1)}</h3>
-              <span>📅 ${date} · ${f.name}</span>
-            </div>
-            <div class="post-card-actions">
-              <a href="https://${user}.github.io/${date.replace(/-/g,'/')}/${f.name.replace('.md','').slice(11)}" target="_blank">
-                <button class="btn btn-outline btn-sm">View →</button>
-              </a>
-            </div>
-          </div>`;
+        const fdate = f.name.match(/^(\d{4}-\d{2}-\d{2})/);
+        const date = fdate ? fdate[1] : '';
+        return '<div class="post-card">' +
+          '<div class="post-card-info">' +
+            '<h3>' + (name.charAt(0).toUpperCase() + name.slice(1)) + '</h3>' +
+            '<span>' + date + ' &middot; ' + f.name + '</span>' +
+          '</div>' +
+          '<div class="post-card-actions">' +
+            '<a href="https://' + user + '.github.io/' + date.replace(/-/g,'/') + '/' + f.name.replace('.md','').slice(11) + '" target="_blank">' +
+              '<button class="btn btn-outline btn-sm">View &rarr;</button>' +
+            '</a>' +
+          '</div>' +
+        '</div>';
       }).join('');
     } catch (e) {
       list.innerHTML = '<p class="empty-state">Could not load posts. Check your token and settings.</p>';
@@ -656,11 +649,11 @@ const encoded = btoa(unescape(encodeURIComponent(fullContent)));
     document.getElementById('pub-status').textContent = 'Ready to publish';
   }
 
-  function toast(msg, type='ok') {
+  function toast(msg, type) {
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.className = `toast show ${type}`;
-    setTimeout(() => t.className = 'toast', 3000);
+    t.className = 'toast show ' + (type || 'ok');
+    setTimeout(function() { t.className = 'toast'; }, 3000);
   }
 </script>
 </body>
