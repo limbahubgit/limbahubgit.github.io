@@ -539,25 +539,7 @@ permalink: /cms.html
       if (coverPath) fm += `image: ${coverPath}\n`;
       fm += `---\n\n`;
 
-      // 1. Create a blank space to hold our automatic image links
-var automaticImages = "";
-
-// 2. Check if your media files container has any photos in it
-if (typeof mediaFiles !== 'undefined' && mediaFiles.length > 0) {
-    mediaFiles.forEach(function(file) {
-        automaticImages = automaticImages + "\n\n![Blog Image](/assets/media/" + file.name + ")";
-    });
-} 
-// Safety check: in case your code spells it with an underscore (media_files)
-else if (typeof media_files !== 'undefined' && media_files.length > 0) {
-    media_files.forEach(function(file) {
-        automaticImages = automaticImages + "\n\n![Blog Image](/assets/media/" + file.name + ")";
-    });
-}
-
-// 3. Glue everything together
-const fullcontent = fm + content + automaticImages;
-      const encoded = btoa(unescape(encodeURIComponent(fullContent)));
+      const fullContent = fm + content;
 
       await ghUpload(token, user, repo, `_posts/${filename}`, encoded);
 
