@@ -1,89 +1,463 @@
 ---
-layout: default
+layout: null
 ---
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ page.title }} — {{ site.title }}</title>
+  <meta name="description" content="{{ page.excerpt | strip_html | truncatewords: 30 }}"/>
+  {% seo %}
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 
-<div class="container post-container">
-  <div class="post-main">
-    <article class="post">
-      <div class="post-header">
-        <div class="post-meta-top">
-          <span class="read-time">{{ content | number_of_words | divided_by: 200 | plus: 1 }} min read</span>
-          <span class="dot">●</span>
-          <span class="post-date">{{ page.date | date: "%b %-d, %Y" }}</span>
-        </div>
+  <style>
+    :root {
+      --bg:       #F7F3ED;
+      --bg2:      #EFEAD9;
+      --text:     #1A1612;
+      --muted:    #7A7268;
+      --border:   #DDD8CE;
+      --gold:     #C09A5A;
+      --gold-dim: #F0E8D5;
+      --card-bg:  #FFFFFF;
+    }
+    [data-theme="dark"] {
+      --bg:       #0D0C0A;
+      --bg2:      #141210;
+      --text:     #EDE8DF;
+      --muted:    #7A7268;
+      --border:   #252220;
+      --gold:     #C09A5A;
+      --gold-dim: #1E1A12;
+      --card-bg:  #131210;
+    }
 
-        <h1 class="post-title">{{ page.title }}</h1>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.6; -webkit-font-smoothing: antialiased;
+      transition: background 0.5s, color 0.5s;
+      cursor: none; overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
 
-        {% if page.description %}
-        <p class="post-description">{{ page.description }}</p>
-        {% endif %}
+    /* Grain */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025; pointer-events: none; z-index: 9990;
+    }
 
-        <div class="post-author-bar">
-          <div class="author-avatar">{{ site.author | slice: 0 }}</div>
-          <span class="author-name">{{ site.author }}</span>
-          {% if page.tags %}
-          <div class="post-tags">
-            {% for tag in page.tags %}
-            <span class="tag">{{ tag }}</span>
-            {% endfor %}
-          </div>
-          {% endif %}
-        </div>
-      </div>
+    /* Cursor */
+    #cursor-dot { position: fixed; width: 6px; height: 6px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width 0.2s, height 0.2s; }
+    #cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid var(--gold); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width 0.3s, height 0.3s, opacity 0.3s; opacity: 0.6; }
+    body.cur-hover #cursor-dot { width: 10px; height: 10px; }
+    body.cur-hover #cursor-ring { width: 56px; height: 56px; opacity: 0.3; }
 
-      {% if page.image %}
-      <div class="post-cover">
-       <img src="{{ page.image }}" alt="{{ page.title }}" style="width:100%; max-width:750px; height:350px; object-fit:cover; border-radius:12px; display:block; margin:0 auto;" />
-      </div>
+    /* Progress */
+    #progress { position: fixed; top: 0; left: 0; height: 1px; background: var(--gold); z-index: 9997; width: 0%; transition: width 0.1s; }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 500;
+      padding: 0 5%; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid transparent; transition: all 0.4s ease;
+    }
+    nav.scrolled {
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(20px); border-bottom-color: var(--border);
+    }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 500; }
+    .logo em { font-style: italic; color: var(--gold); }
+    .nav-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: 2.5rem; }
+    .nav-center a { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); transition: color 0.2s; position: relative; }
+    .nav-center a::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 100%; height: 1px; background: var(--gold); transition: right 0.3s; }
+    .nav-center a:hover { color: var(--text); }
+    .nav-center a:hover::after { right: 0; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .theme-btn { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 0.4rem 0.8rem; font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--muted); cursor: none; transition: all 0.2s; }
+    .theme-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .back-link { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); transition: color 0.2s; display: flex; align-items: center; gap: 0.4rem; }
+    .back-link:hover { color: var(--gold); }
+
+    /* Post Hero */
+    .post-hero {
+      max-width: 800px; margin: 0 auto;
+      padding: 5rem 5% 3rem;
+      text-align: center;
+      animation: fade-up 0.8s ease both;
+    }
+
+    .post-meta {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.75rem; margin-bottom: 2rem;
+    }
+    .post-cat {
+      font-family: 'DM Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);
+    }
+    .post-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border); }
+    .post-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); }
+    .post-read-time { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); }
+
+    .post-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 400; line-height: 1.15;
+      letter-spacing: -0.02em; margin-bottom: 2rem;
+    }
+
+    .post-excerpt-hero {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 300; font-style: italic;
+      color: var(--muted); line-height: 1.7;
+      max-width: 600px; margin: 0 auto 3rem;
+    }
+
+    /* Divider */
+    .post-divider {
+      display: flex; align-items: center; gap: 1rem;
+      max-width: 800px; margin: 0 auto 3rem; padding: 0 5%;
+    }
+    .post-divider span { flex: 1; height: 1px; background: var(--border); }
+    .post-divider small { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+
+    /* Cover Image */
+    .cover-wrap {
+      max-width: 1000px; margin: 0 auto 5rem; padding: 0 5%;
+      animation: fade-up 0.8s ease 0.2s both; opacity: 0;
+    }
+    .cover-wrap.loaded { opacity: 1; }
+    .cover-img {
+      width: 100%; aspect-ratio: 16/9;
+      object-fit: cover; border-radius: 2px;
+      filter: grayscale(10%);
+      transition: filter 0.5s;
+    }
+    .cover-img:hover { filter: grayscale(0%); }
+
+    /* Post Content */
+    .post-body {
+      max-width: 700px; margin: 0 auto;
+      padding: 0 5% 6rem;
+      animation: fade-up 0.8s ease 0.3s both;
+    }
+
+    /* Typography */
+    .post-body p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 2vw, 1.25rem);
+      line-height: 1.85; color: var(--text);
+      margin-bottom: 1.8rem; font-weight: 400;
+    }
+
+    .post-body h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 500; line-height: 1.3;
+      margin: 3rem 0 1.2rem; color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .post-body h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      font-weight: 500; margin: 2.5rem 0 1rem;
+      font-style: italic; color: var(--gold);
+    }
+
+    .post-body blockquote {
+      border-left: 2px solid var(--gold);
+      margin: 2.5rem 0; padding: 1rem 0 1rem 2rem;
+    }
+
+    .post-body blockquote p {
+      font-style: italic; color: var(--muted);
+      font-size: clamp(1.2rem, 2vw, 1.4rem);
+      margin-bottom: 0;
+    }
+
+    .post-body img {
+      width: 100%; border-radius: 2px; margin: 2rem 0;
+      border: 1px solid var(--border);
+    }
+
+    .post-body a { color: var(--gold); border-bottom: 1px solid var(--gold-dim); transition: border-color 0.2s; }
+    .post-body a:hover { border-color: var(--gold); }
+
+    .post-body ul, .post-body ol {
+      padding-left: 1.5rem; margin-bottom: 1.8rem;
+    }
+
+    .post-body li {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 2vw, 1.25rem);
+      line-height: 1.85; margin-bottom: 0.5rem;
+    }
+
+    .post-body code {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85em; background: var(--bg2);
+      border: 1px solid var(--border); border-radius: 3px;
+      padding: 0.1em 0.4em; color: var(--gold);
+    }
+
+    .post-body pre {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1.5rem;
+      overflow-x: auto; margin-bottom: 2rem;
+    }
+
+    .post-body pre code {
+      background: none; border: none; padding: 0;
+      font-size: 0.85rem; color: var(--text);
+    }
+
+    .post-body hr {
+      border: none; border-top: 1px solid var(--border);
+      margin: 3rem 0;
+    }
+
+    /* Post Footer */
+    .post-footer {
+      max-width: 700px; margin: 0 auto;
+      padding: 3rem 5% 6rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .post-tags { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 3rem; }
+    .post-tag {
+      font-family: 'DM Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); border: 1px solid var(--border);
+      border-radius: 2px; padding: 0.35rem 0.8rem;
+      transition: all 0.2s;
+    }
+    .post-tag:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Author card */
+    .author-card {
+      display: flex; align-items: center; gap: 1.5rem;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1.5rem 2rem; margin-bottom: 3rem;
+    }
+    .author-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--gold-dim); border: 1px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; color: var(--gold); flex-shrink: 0;
+    }
+    .author-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 500; margin-bottom: 0.2rem; }
+    .author-bio { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+
+    /* Prev/Next */
+    .post-nav {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .post-nav-item {
+      border: 1px solid var(--border); border-radius: 2px;
+      padding: 1.5rem; transition: border-color 0.2s;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .post-nav-item:hover { border-color: var(--gold); }
+    .post-nav-item.next { text-align: right; }
+
+    .post-nav-label {
+      font-family: 'DM Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted);
+    }
+    .post-nav-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem; font-weight: 500; line-height: 1.3;
+      color: var(--text); transition: color 0.2s;
+    }
+    .post-nav-item:hover .post-nav-title { color: var(--gold); }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 3rem 5%; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; }
+    .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; }
+    .footer-logo em { font-style: italic; color: var(--gold); }
+    .footer-copy { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); }
+    .footer-socials { display: flex; gap: 1.2rem; }
+    .footer-socials a { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); transition: color 0.2s; }
+    .footer-socials a:hover { color: var(--gold); }
+
+    #btt { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; border: 1px solid var(--border); border-radius: 2px; background: var(--bg); color: var(--muted); font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: none; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 400; }
+    #btt.show { opacity: 1; transform: none; }
+    #btt:hover { border-color: var(--gold); color: var(--gold); }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .nav-center { display: none; }
+      .post-nav { grid-template-columns: 1fr; }
+      body { cursor: auto; }
+      #cursor-dot, #cursor-ring { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+  <div id="progress"></div>
+
+  <nav id="nav">
+    <a href="/" class="logo">Limbaaaa <em>Writes</em></a>
+    <div class="nav-center">
+      <a href="/#posts">Writing</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+    </div>
+    <div class="nav-right">
+      <a href="/" class="back-link">← All Posts</a>
+      <button class="theme-btn" id="themeBtn">Light</button>
+    </div>
+  </nav>
+
+  <!-- Post Hero -->
+  <div class="post-hero">
+    <div class="post-meta">
+      {% if page.categories.first %}
+        <span class="post-cat">{{ page.categories.first }}</span>
+        <div class="post-dot"></div>
       {% endif %}
+      <span class="post-date">{{ page.date | date: "%B %d, %Y" }}</span>
+      <div class="post-dot"></div>
+      <span class="post-read-time" id="read-time">— min read</span>
+    </div>
 
-      <div class="post-content">
-        {{ content }}
-      </div>
+    <h1 class="post-title">{{ page.title }}</h1>
 
-      <div class="post-nav">
-        {% if page.previous.url %}
-        <a href="{{ page.previous.url }}" class="prev-post">
-          <span class="nav-label">← Previous</span>
-          <span class="nav-title">{{ page.previous.title }}</span>
-        </a>
-        {% endif %}
-        {% if page.next.url %}
-        <a href="{{ page.next.url }}" class="next-post">
-          <span class="nav-label">Next →</span>
-          <span class="nav-title">{{ page.next.title }}</span>
-        </a>
-        {% endif %}
-      </div>
-    </article>
+    {% if page.excerpt %}
+    <p class="post-excerpt-hero">{{ page.excerpt | strip_html | truncatewords: 25 }}</p>
+    {% endif %}
   </div>
 
-  <aside class="sidebar">
-    <div class="sidebar-section">
-      <p class="sidebar-label">Latest posts</p>
-      {% for post in site.posts limit:4 %}
-      <a href="{{ post.url }}" class="recent-post">
-        <div class="rp-img">
-          {% if post.image %}<img src="{{ post.image }}" alt="{{ post.title }}" />{% endif %}
-        </div>
-        <div>
-          <p class="rp-title">{{ post.title }}</p>
-          <p class="rp-date">{{ post.date | date: "%b %-d, %Y" }}</p>
-        </div>
-      </a>
+  <div class="post-divider">
+    <span></span>
+    <small>✦ {{ site.author }}</small>
+    <span></span>
+  </div>
+
+  <!-- Cover Image -->
+  {% if page.image %}
+  <div class="cover-wrap" id="coverWrap">
+    <img class="cover-img" src="{{ page.image }}" alt="{{ page.title }}" onload="document.getElementById('coverWrap').classList.add('loaded')"/>
+  </div>
+  {% endif %}
+
+  <!-- Post Content -->
+  <article class="post-body">
+    {{ content }}
+  </article>
+
+  <!-- Post Footer -->
+  <div class="post-footer">
+
+    <!-- Tags -->
+    {% if page.tags.size > 0 %}
+    <div class="post-tags">
+      {% for tag in page.tags %}
+        <span class="post-tag">{{ tag }}</span>
       {% endfor %}
     </div>
+    {% endif %}
 
-    {% if site.tags.size > 0 %}
-    <div class="sidebar-section">
-      <p class="sidebar-label">Explore tags</p>
-      <div class="tags-cloud">
-        {% for tag in site.tags %}
-        <span class="tag">{{ tag[0] }}</span>
-        {% endfor %}
+    <!-- Author Card -->
+    <div class="author-card">
+      <div class="author-avatar">D</div>
+      <div>
+        <p class="author-name">{{ site.author }}</p>
+        <p class="author-bio">{{ site.description }}</p>
       </div>
     </div>
-    {% endif %}
-  </aside>
-</div>
 
+    <!-- Prev/Next -->
+    <div class="post-nav">
+      {% if page.previous.url %}
+      <a href="{{ page.previous.url }}" class="post-nav-item prev">
+        <span class="post-nav-label">← Previous</span>
+        <span class="post-nav-title">{{ page.previous.title }}</span>
+      </a>
+      {% else %}<div></div>{% endif %}
+
+      {% if page.next.url %}
+      <a href="{{ page.next.url }}" class="post-nav-item next">
+        <span class="post-nav-label">Next →</span>
+        <span class="post-nav-title">{{ page.next.title }}</span>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-logo">Limbaaaa <em>Writes</em></span>
+      <span class="footer-copy">© {{ site.time | date: "%Y" }} {{ site.author }}</span>
+      <div class="footer-socials">
+        <a href="https://instagram.com" target="_blank">Instagram</a>
+        <a href="https://github.com/limbahubgit" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+  <script>
+  (function(){
+    // Cursor
+    const dot=document.getElementById('cursor-dot'), ring=document.getElementById('cursor-ring');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{ mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; });
+    (function loop(){ rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(loop); })();
+    document.querySelectorAll('a,button').forEach(el=>{
+      el.addEventListener('mouseenter',()=>document.body.classList.add('cur-hover'));
+      el.addEventListener('mouseleave',()=>document.body.classList.remove('cur-hover'));
+    });
+
+    // Progress + scroll
+    window.addEventListener('scroll',()=>{
+      document.getElementById('progress').style.width=(window.scrollY/(document.documentElement.scrollHeight-window.innerHeight)*100)+'%';
+      document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60);
+      document.getElementById('btt').classList.toggle('show',window.scrollY>400);
+    });
+
+    // Theme
+    const html=document.documentElement, btn=document.getElementById('themeBtn');
+    const saved=localStorage.getItem('lw-theme')||'dark';
+    html.setAttribute('data-theme',saved);
+    btn.textContent=saved==='dark'?'Light':'Dark';
+    btn.addEventListener('click',()=>{
+      const next=html.getAttribute('data-theme')==='dark'?'light':'dark';
+      html.setAttribute('data-theme',next);
+      localStorage.setItem('lw-theme',next);
+      btn.textContent=next==='dark'?'Light':'Dark';
+    });
+
+    // Read time
+    const words = document.querySelector('.post-body').innerText.split(/\s+/).length;
+    const mins  = Math.max(1, Math.round(words / 200));
+    document.getElementById('read-time').textContent = mins + ' min read';
+  })();
+  </script>
+
+  <!-- Widget -->
+  {% include widget.html %}
+
+</body>
+</html>
