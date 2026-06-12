@@ -1,0 +1,117 @@
+<style>
+  .lw-wrap { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #c084fc, #818cf8, #C09A5A); padding: 2px; z-index: 9999; opacity: 0; transform: scale(0); transition: transform 0.6s cubic-bezier(.34,1.56,.64,1), opacity 0.4s; animation: gradient-spin 4s linear infinite; }
+  .lw-wrap.ready { opacity: 1; transform: scale(1); }
+  @keyframes gradient-spin { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+  #lw-btn { width: 100%; height: 100%; border-radius: 50%; background: #0D0C0A; border: none; font-size: 22px; cursor: none; display: flex; align-items: center; justify-content: center; color: #EDE8DF; transition: transform 0.15s; }
+  #lw-btn:hover { transform: scale(1.08); }
+  #lw-panel { position: fixed; bottom: 100px; right: 28px; width: 300px; z-index: 9998; pointer-events: none; opacity: 0; transform: translateY(16px) scale(0.96); transform-origin: bottom right; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); font-family: 'DM Sans', sans-serif; }
+  #lw-panel.open { pointer-events: all; opacity: 1; transform: none; }
+  .lw-inner { background: #0f0f0f; border: 1px solid #252220; border-radius: 16px; padding: 22px; position: relative; }
+  .lw-close { position: absolute; top: 12px; right: 14px; background: #1a1a1a; border: 1px solid #2a2a2a; color: #555; font-size: 13px; cursor: none; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .lw-close:hover { color: #EDE8DF; transform: rotate(90deg); }
+  .lw-title { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500; color: #EDE8DF; margin-bottom: 4px; }
+  .lw-sub { font-size: 12px; color: #666; margin-bottom: 16px; line-height: 1.5; }
+  .lw-input { width: 100%; background: #161616; border: 1px solid #222; border-radius: 8px; padding: 9px 13px; color: #EDE8DF; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; transition: border-color 0.2s; margin-bottom: 8px; box-sizing: border-box; }
+  .lw-input:focus { border-color: #C09A5A; }
+  .lw-submit { width: 100%; background: #C09A5A; border: none; border-radius: 8px; padding: 10px; color: #0D0C0A; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; cursor: none; transition: opacity 0.2s; position: relative; overflow: hidden; }
+  .lw-submit::after { content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transform: skewX(-20deg); animation: shimmer 2.5s ease infinite; }
+  @keyframes shimmer { 0% { left: -100%; } 100% { left: 160%; } }
+  .lw-submit:hover { opacity: 0.85; }
+  .lw-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+  .lw-skip { display: block; text-align: center; margin-top: 8px; font-size: 11px; color: #444; cursor: none; background: none; border: none; width: 100%; font-family: 'DM Mono', monospace; letter-spacing: 0.1em; transition: color 0.2s; }
+  .lw-skip:hover { color: #666; }
+  .lw-success { text-align: center; padding: 8px 0; }
+  .lw-emoji { font-size: 40px; display: block; margin-bottom: 10px; animation: pop 0.5s cubic-bezier(.34,1.56,.64,1) both; }
+  @keyframes pop { from { transform: scale(0) rotate(-20deg); } to { transform: scale(1); } }
+  .lw-success-title { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: #EDE8DF; margin-bottom: 4px; }
+  .lw-success-sub { font-size: 12px; color: #555; }
+  .lw-particle { position: fixed; border-radius: 50%; pointer-events: none; z-index: 99999; animation: particle-fly 1s ease-out forwards; }
+  @keyframes particle-fly { 0% { opacity:1; transform:translate(0,0) scale(1); } 100% { opacity:0; transform:translate(var(--tx),var(--ty)) scale(0); } }
+  @media (max-width: 480px) { #lw-panel { right: 12px; left: 12px; width: auto; } .lw-wrap { bottom: 20px; right: 20px; } }
+</style>
+
+<div class="lw-wrap" id="lw-wrap">
+  <button id="lw-btn">👋</button>
+</div>
+
+<div id="lw-panel">
+  <div class="lw-inner">
+    <button class="lw-close" onclick="lwClose()">×</button>
+    <div id="lw-form">
+      <p class="lw-title">Hey, you! 👋</p>
+      <p class="lw-sub">How did you find this blog? Drop your IG if you want to connect!</p>
+      <input class="lw-input" id="lw-name" type="text" placeholder="Your name *"/>
+      <input class="lw-input" id="lw-ig" type="text" placeholder="@yourhandle (optional)"/>
+      <select class="lw-input" id="lw-source" style="appearance:none;cursor:pointer">
+        <option value="" disabled selected>How did you find this? 🤔</option>
+        <option value="Instagram">Instagram</option>
+        <option value="Google">Google</option>
+        <option value="Friend shared it">Friend shared it</option>
+        <option value="Other">Other</option>
+      </select>
+      <button class="lw-submit" id="lw-submit" onclick="lwSubmit()">Send ✦</button>
+      <button class="lw-skip" onclick="lwClose()">Maybe later →</button>
+    </div>
+    <div id="lw-success" class="lw-success" style="display:none">
+      <span class="lw-emoji">🎉</span>
+      <p class="lw-success-title">You're amazing!</p>
+      <p class="lw-success-sub">Thanks for saying hi 🙏</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  const SUPABASE_URL      = 'https://vtfmaldbgrtxywmbulqy.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0Zm1hbGRiZ3J0eHl3bWJ1bHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzU0NzgsImV4cCI6MjA5MTQxMTQ3OH0.jxiItetrB0X6UwiKtw11sijnvITAGxt3vUpf0vqgOrY';
+  const db    = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const wrap  = document.getElementById('lw-wrap');
+  const btn   = document.getElementById('lw-btn');
+  const panel = document.getElementById('lw-panel');
+
+  if(localStorage.getItem('lw_done')==='1'){ wrap.style.display='none'; return; }
+  setTimeout(()=>wrap.classList.add('ready'), 2000);
+
+  btn.addEventListener('click',()=>{
+    const open = panel.classList.toggle('open');
+    btn.textContent = open ? '×' : '👋';
+  });
+
+  window.lwClose = function(){
+    panel.classList.remove('open');
+    btn.textContent='👋';
+  };
+
+  function spawnParticles(x,y){
+    const colors=['#C09A5A','#c084fc','#818cf8','#86efac','#EDE8DF'];
+    for(let i=0;i<16;i++){
+      const p=document.createElement('div');
+      p.className='lw-particle';
+      const angle=(Math.PI*2*i)/16, dist=60+Math.random()*80;
+      p.style.cssText=`left:${x}px;top:${y}px;background:${colors[i%colors.length]};--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;width:${4+Math.random()*6}px;height:${4+Math.random()*6}px;animation-duration:${0.7+Math.random()*0.4}s;`;
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),1200);
+    }
+  }
+
+  window.lwSubmit = async function(){
+    const name=document.getElementById('lw-name').value.trim();
+    const ig=document.getElementById('lw-ig').value.trim();
+    const source=document.getElementById('lw-source').value;
+    const sub=document.getElementById('lw-submit');
+    if(!name){ document.getElementById('lw-name').style.borderColor='#f87171'; return; }
+    if(!source){ document.getElementById('lw-source').style.borderColor='#f87171'; return; }
+    sub.disabled=true; sub.textContent='Sending…';
+    const {error}=await db.from('visitors').insert([{name,ig_handle:ig,source,visited_at:new Date().toISOString()}]);
+    if(error){ sub.disabled=false; sub.textContent='Try again'; return; }
+    localStorage.setItem('lw_done','1');
+    const rect=panel.getBoundingClientRect();
+    spawnParticles(rect.left+rect.width/2, rect.top+rect.height/2);
+    document.getElementById('lw-form').style.display='none';
+    document.getElementById('lw-success').style.display='block';
+    wrap.style.display='none';
+    setTimeout(lwClose,3000);
+  };
+})();
+</script>
