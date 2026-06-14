@@ -1,0 +1,10 @@
+title: "Limbaaaa Writes"
+description: "Thoughts, stories and ideas."
+author: "deepak limba"
+url: "https://limbahubgit.github.io"
+baseurl: ""
+future: true
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
