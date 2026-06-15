@@ -1,0 +1,13 @@
+---
+layout: post
+title: "Why first draft always sucks"
+date: 2026-06-15
+categories: STORY
+---
+
+Its been a week since i have downloaded a application called 'substack' , it's a great app for readers and writers , people write very very long articles whether it's about their life or an experience or something they want to teach  but most of the time people explain, how you are so behind in a race by giving their article title as "**everything you are doing wrong on substack**" or sometimes like this **there are top 10 writers who is making gazillions annually on substack** to give us a sense that this can be monetized too , not everyone want to cause money sometimes people want to read something good , sometimes people want to write something, not because they want a validation or money of their content but just to connect with the person who shares same thought, who feels the same after reading that prose, but people tend to make everything about profit and loss. I am not against those people they live in a same state of capitalism as I am but try to find a tiny space in this state where you can isolate yourself and try to be creative in that cold space just to warm yourself. 
+## the reason i am writing this post.
+Yesss i forgot to mention that why my title and this post is opposite because last night i tried to write an article on substack and I challenged myself that I will write this article whether i know or not what to write but ive made up my mind that is sure i am gonna fucking write something. 
+Surely i did write a short article, posted it proudly and went to sleep. I wake up open susbstack goes to my profile and deleted that article🙃 because I realized what i have written is not a fucking article that is fucking bullshit article is meant to tell you something ,give you some conclusion ,give you some info what i did in that article is that I made that article into a personal diary which is not you are supposed to do in a article. Well I also felt that was very lame writing and so bad, even i wouldn't vomit on that. But i will practice to write more and more till article title looks like " **ten ways to make money on substack**". 
+
+Well that's it from side. I hope you like it and if you don't go fuckyourself this is My fucking space and my own webpage **which is made by me for me shall not perish from the earth** (original quote by abraham lincoln) i can do anything here I can write anything here this is not substack this is My own. okay enough of the bragging. Peace out ✌️
