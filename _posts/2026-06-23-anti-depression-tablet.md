@@ -15,4 +15,3 @@ today 23/06/2026 at 12:30am after argentina second match here I am again saying 
 
 Match details 
 Well firstly he missed out on penalty and I am like he will make a record without penalty he doesn't need penalty and obviously he scored 2 goals. On the other hand I had expected Austria to be more competitive but their pace is slow, possession not so much , attacking is completely out of strategy overall a decent match.
-![20260623_003053_1.gif](https://limbahubgit.github.io/assets/media/1782159440495-202606230030531.gif)
